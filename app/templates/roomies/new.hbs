@@ -1,0 +1,12 @@
+<legend>Add new Roomie</legend>
+	<label id="add-roomie">username</label>
+	{{view Ember.TextField valueBinding="username"}}
+</br>
+	<label id="add-roomie">password</label>
+	{{view Ember.TextField valueBinding="password"}}
+</br>
+	<button {{action addRoomie }}>Save</button>
+    <button {{action cancel }}>Cancel</button>
+    <h3>Current values: {{username}} {{password}}</h3>
+
+

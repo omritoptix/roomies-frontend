@@ -1,0 +1,7 @@
+{{log controller}}
+<ul>
+{{#each controller}}
+<li>{{#linkTo 'roomie' this}}{{username}}{{/linkTo}} <button {{action delete this}}>Delete</button></li> 
+{{/each}}
+</ul>
+{{#linkTo 'roomies.new'}}Add Roomie{{/linkTo}}

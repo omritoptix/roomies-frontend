@@ -1,0 +1,17 @@
+<legend>Edit</legend>
+	<label>username:</label>
+	{{view Ember.TextField valueBinding="username"}}
+
+	<label>password:</label> 
+	{{view Ember.TextField valueBinding="password"}}
+	<br>
+	<label>apartment:</label>
+	<button {{bindAttr disabled="noApartment"}}>Add Apartment</button>
+	<button {{bindAttr disabled="isApartment"}}>Remove Apartment</button>
+	<button {{action save}}>Save</button>
+	<button {{action back}}>Back</button>
+<!-- 	<button {{bindAttr disabled="test"}}>Back</button>
+	{{#view Yeomanwebapp.AddApartment}}Add Apartment{{/view}}
+	{{#view Yeomanwebapp.RemoveApartment}}Remove Apartment{{/view}} -->
+
+

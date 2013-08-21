@@ -1,0 +1,10 @@
+<form {{action "login" on="submit"}}>
+<lable>username:</username> {{view Ember.TextField valueBinding="username"}}	
+<br>
+<lable>password:</username> {{view Ember.TextField type="password" valueBinding="password"}}
+<br>
+<button type="submit" {{bindAttr disabled="isProcessing"}}>Log in</button>
+{{#if loginFailed}}
+	<span> Login has failed! </span>
+{{/if}}
+</form>
