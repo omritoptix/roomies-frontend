@@ -1,0 +1,17 @@
+<ul>My Invites</ul>
+{{!-- {{getMyInvites}} --}}
+<!-- if there are no invites -->
+{{log controller.myInvitesLength}}
+{{#if controller.myInvitesLength}}
+	{{#each controller.myInvites}}
+			<ul><b>Invite From</b>: {{fromRoomie.username}} 
+			<b>Apartment</b> : {{apartment.address}} 
+			<b>action</b>: 
+				{{#ifCond status 2}}
+				<button {{action confirm this}}>Confirm</button> |
+				<button {{action reject this}}>Reject</button>
+				{{/ifCond}} </ul>
+	{{/each}}
+{{else}}
+	<h4> There are no pending Invites </h4>
+{{/if}}

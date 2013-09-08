@@ -1,10 +1,22 @@
-<form {{action "login" on="submit"}}>
-<lable>username:</username> {{view Ember.TextField valueBinding="username"}}	
-<br>
-<lable>password:</username> {{view Ember.TextField type="password" valueBinding="password"}}
-<br>
-<button type="submit" {{bindAttr disabled="isProcessing"}}>Log in</button>
-{{#if loginFailed}}
-	<span> Login has failed! </span>
-{{/if}}
-</form>
+<div class="span4 offset4">
+	<h3>Roomies Login</h3>
+		<form class="form-horizontal well well-grey	" {{action "login" on="submit"}}>
+			<div class="control-group">
+				{{view Ember.TextField valueBinding="username" placeholder="Username"}}
+			</div>
+			<div class="control-group">
+				{{view Ember.TextField type="password" valueBinding="password" placeholder="password"}}
+			</div>
+			<div class="control-group">
+					<button class="btn btn-primary" type="submit" {{bindAttr disabled="isProcessing"}}>Log in</button>
+			</div>
+				{{#if loginFailed}}
+					<span> Login has failed! </span>
+				{{/if}}
+		</form>
+
+	<div class="login-help">
+		<p>Forgot your password? <a href="#">Click here to reset it</a>.</p>
+	</div>
+</div>
+

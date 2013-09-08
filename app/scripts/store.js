@@ -18,8 +18,16 @@ Yeomanwebapp.Store = DS.Store.extend({
   		serializer: Nerdeez.DjangoTastypieSerializer.extend({
   		    init: function(){
                 this._super();
-                this.mappings.set( 'Yeomanwebapp.Roomie', { apartment: { embedded: 'load' } } );
-            }	
+                this.mappings.set('Yeomanwebapp.Roomie', { 
+                  apartment: { embedded: 'load' } 
+                });
+                this.mappings.set('Yeomanwebapp.Invite', {
+                  fromRoomie: {embedded:'load'},
+                  toRoomie : {embedded : 'load'},
+                  apartment : {embedded:'load'}
+                });
+            }
+
   		})
   	})
 });

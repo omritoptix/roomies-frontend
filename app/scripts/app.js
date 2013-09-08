@@ -12,8 +12,11 @@ require('bower_components/tastypie-adapter/wormhole');
 require('bower_components/tastypie-adapter/porthole');
 require('bower_components/tastypie-adapter/tastypie_adapter');
 require('bower_components/tastypie-adapter/tastypie_serializer');
+require('libs/handlebars_helpers/*');
 require('scripts/store');
 require('scripts/models/*');
 require('scripts/routes/*');
 require('scripts/views/*');
 require('scripts/router');
+require('scripts/custom/*');
+

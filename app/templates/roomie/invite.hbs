@@ -1,0 +1,7 @@
+<h3>Search for roomie to invite : </h3>
+{{view Ember.TextField valueBinding="query"}}
+<button {{action searchRoomie}}>Search</button>
+<ul>{{#each controller.roomiesToInvite}}
+	<li><button {{action inviteRoomie this}}>{{username}}</button></li>
+{{/each}}
+</ul>

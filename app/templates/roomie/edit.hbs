@@ -1,13 +1,14 @@
 <legend>Edit</legend>
-	<label>username:</label>
-	{{view Ember.TextField valueBinding="username"}}
-
-	<label>password:</label> 
-	{{view Ember.TextField valueBinding="password"}}
-	<br>
-	<label>apartment:</label>
-	<button {{bindAttr disabled="noApartment"}}>Add Apartment</button>
-	<button {{bindAttr disabled="isApartment"}}>Remove Apartment</button>
+	<label>username:{{view Ember.TextField valueBinding="username"}} </label>
+	<label>password: {{view Ember.TextField valueBinding="password"}} </label>
+	<label>apartment:
+	{{#if apartment.address}}
+		{{apartment.address}}
+	{{else}}
+		no apartment </label>
+	{{/if}}
+	<button {{bindAttr disabled="noApartment"}} {{action addApartment}}>Add Apartment</button>
+	<button {{bindAttr disabled="isApartment"}} {{action removeApartment}}>Remove Apartment</button>
 	<button {{action save}}>Save</button>
 	<button {{action back}}>Back</button>
 <!-- 	<button {{bindAttr disabled="test"}}>Back</button>

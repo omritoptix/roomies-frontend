@@ -1,1 +1,28 @@
+<div class="navbar">
+    <div class="navbar navbar-static-top">
+        <div class="navbar-inner">
+            <a class="brand" href="#">Roomies</a>
+            <ul class="nav">
+                <li>{{#linkTo 'roomie'}}Home{{/linkTo}}</li>
+                <li>{{#linkTo 'roomie.myInvites'}}My Invites
+	                <!-- calculate new invites -->
+				    {{newInvitesCalc}}
+					{{#if newInvitesNum}}
+						  - {{newInvitesNum}} New
+					{{else}}
+						- no new invites
+					{{/if}}
+				{{/linkTo}}</li>
+				</li>
+                {{log hasApartment}}
+                {{debugger}}
+                {{#view Yeomanwebapp.InviteMenuItem}}
+                   {{#linkTo 'roomie.invite' disabledWhen="noApartment"}}Invite Roomies{{/linkTo}}
+                {{/view}}
+                <li>{{#linkTo 'roomie.edit'}}<i class="icon-edit"></i> Edit Profile{{/linkTo}}</li>
+            </ul>
+        </div>
+    </div>
+</div>   
+{{log controller}}      
 {{outlet}}
