@@ -3,9 +3,9 @@ Yeomanwebapp.LoginController = Em.ObjectController.extend ({
 	password : null,
 	loginFailed : false,
 	isProcessing: false,
+	isLoggedIn : false,
 
 	login : function() {
-		// debugger;
 		var self = this;
 		this.set("isProcessing",true);
 		var username = this.get('username');
@@ -17,6 +17,9 @@ Yeomanwebapp.LoginController = Em.ObjectController.extend ({
 			if (currentRoomie != null) {
 				if (currentRoomie.get('password') == password) {
 					self.set("isProcessing",false);
+					//get roomie controller and set loggedIn to true
+					debugger;
+					self.set("isLoggedIn",true);
 					self.transitionToRoute('roomie', currentRoomie);
 				}
 				else {

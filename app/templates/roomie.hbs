@@ -3,8 +3,8 @@
         <div class="navbar-inner">
             <a class="brand" href="#">Roomies</a>
             <ul class="nav">
-                <li>{{#linkTo 'roomie'}}Home{{/linkTo}}</li>
-                <li>{{#linkTo 'roomie.myInvites'}}My Invites
+                <li>{{#linkTo 'roomie.homePage'}}<i class="icon-home"></i> Home{{/linkTo}}</li>
+                <li>{{#linkTo 'roomie.myInvites'}}<i class="icon-envelope"></i> My Invites
 	                <!-- calculate new invites -->
 				    {{newInvitesCalc}}
 					{{#if newInvitesNum}}
@@ -14,10 +14,8 @@
 					{{/if}}
 				{{/linkTo}}</li>
 				</li>
-                {{log hasApartment}}
-                {{debugger}}
                 {{#view Yeomanwebapp.InviteMenuItem}}
-                   {{#linkTo 'roomie.invite' disabledWhen="noApartment"}}Invite Roomies{{/linkTo}}
+                   {{#linkTo 'roomie.invite' disabledWhen="noApartment"}}<i class="icon-user"></i> Invite Roomies{{/linkTo}}
                 {{/view}}
                 <li>{{#linkTo 'roomie.edit'}}<i class="icon-edit"></i> Edit Profile{{/linkTo}}</li>
             </ul>

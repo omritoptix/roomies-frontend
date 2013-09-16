@@ -1,11 +1,10 @@
 Yeomanwebapp.RoomieController = Em.ObjectController.extend ({
-	needs : 'roomieEdit',
+	needs : ['roomieEdit'],
 	newInvites : null,
 	newInvitesNum : null,
 	noApartment : true,
 
 	newInvitesCalc : function() {
-		debugger;
 		var self = this;
 		var newInvitesNum = null;
 		roomie = this.get('content');
@@ -24,11 +23,19 @@ Yeomanwebapp.RoomieController = Em.ObjectController.extend ({
 
 	}.property(),
 
-	noApartmentCalc : function() {
-		debugger;
-		console.log('entered');
-	}.property('controllers.roomieEdit.noApartment')
 
+	// computed property not working
+	// 
+	// 
+	// noApartmentCalc : function() {
+	// 	debugger;
+	// 	console.log('entered');
+	// }.property('controllers.roomieEdit.noApartmentTest')
+	
+
+	//one 'didLoad' not entering - just the first time.
+	//
+	//
 	// refreshInvites : function () {
 	// 	debugger;
 	// 	self = this;

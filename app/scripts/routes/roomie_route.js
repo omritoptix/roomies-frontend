@@ -1,4 +1,5 @@
 Yeomanwebapp.RoomieRoute = Em.Route.extend ({
+
 	model : function(params) {
 		return Yeomanwebapp.Roomie.find(params.roomie_id);
 	},
@@ -20,6 +21,13 @@ Yeomanwebapp.RoomieRoute = Em.Route.extend ({
 
 	deactivate: function() {
 		// clearInterval(this.timer);
-	}
+	},
+
+	// events : {
+	// 	willTransition : function(transition) {
+			
+	// 	}
+	// }
+
 
 })

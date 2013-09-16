@@ -9,10 +9,13 @@ Yeomanwebapp.Router.map(function () {
   	this.route('new');
   });
 
+  this.resource('test',{path:'/test'});
+
   this.resource('roomie', {path:'/roomie/:roomie_id'}, function() {
   	this.route('edit');
     this.route('invite');
     this.route('myInvites');
+    this.route('homePage');
   });
   
 

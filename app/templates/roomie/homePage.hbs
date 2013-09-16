@@ -1,0 +1,41 @@
+<legend>Home</legend>
+	{{!set default year and month for current date}}
+	{{setDefaults}}
+	<form class="form-inline">
+		Month : {{view Ember.Select
+					contentBinding="monthPicker"
+					optionLabelPath="content.desc"
+					optionValuePath="content.id"
+					valueBinding = "monthSelected"}}
+
+		Year : {{view Ember.Select 
+			contentBinding="yearPicker"
+			valueBinding = "yearSelected"}}
+		<button class="btn btn-primary" {{action searchBill}}>Search Bill</button>
+
+	</form>
+
+	{{#if billItems}}
+		{{initRoomiesBillsArray}}
+		{{calcBillShare}}
+		<table class="table table-hover">
+			<tr>
+				<th>Date Created</th>
+				<th>Bill Type</th>
+				<th>Amount</th>
+				<th>Assigned Roomies</th>
+				<th>Created By</th>
+			</tr>
+
+			{{#each controller.billItems}}
+			<tr>
+				<td>{{format-date dateCreated}}</th>
+				<td>{{billType.description}}</td>
+				<td>{{amount}}</td>
+				<td>{{#view Yeomanwebapp.ShowRoomiesPopOver}}{{roomieBillItem.length}} {{pluralize Roomie roomieBillItem.length}}{{/view}}
+				</td>
+				<td>{{createdBy.username}}</td>
+			{{/each}}
+
+	{{/if}}
+

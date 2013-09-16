@@ -1,7 +1,7 @@
-// Yeomanwebapp.RoomieMyInvitesController = Ember.ArrayController.extend({
 Yeomanwebapp.RoomieMyInvitesController = Ember.ObjectController.extend({
 	myInvites : null,
 	myInvitesLength : null,
+	newInvitesLength : null,
 
 	getMyInvites : function() {
 		var self = this;
@@ -9,51 +9,43 @@ Yeomanwebapp.RoomieMyInvitesController = Ember.ObjectController.extend({
 		invites = Yeomanwebapp.Invite.find({
 			toRoomie : roomie.get('id')
 		});
-		// this.invitesLoaded(invites);
 		invites.one('didLoad', function() {
+			var newInvites = invites.filter(function(invite) {
+  				return (invite.get('new') == true);
+			});
 			self.set("myInvites", invites.toArray());
-			self.set("myInvitesLength",invites.toArray().length)
+			self.set("myInvitesLength", invites.toArray().length);
+			self.set("newInvitesLength",newInvites.toArray().length);
 		});
-		// setInterval(function() {
-  //     		invites = Yeomanwebapp.Invite.find({
-		// 	toRoomie : roomie.get('id')
-		// 	});
-  //     		this.invitesLoaded(invites);
-  //   		}, 2000);
-		debugger;
-		// self.set("myInvites", this.get('content').toArray());
-		// self.set("myInvitesLength",this.get('content').toArray().length)
 		
 	}.observes('content.toArray().@each'),
 
-	// invitesLoaded: function (invites) {
-	// 	invites.one('didLoad', function() {
-	// 	this.set("myInvites", invites.toArray());
-	// 	this.set("myInvitesLength",invites.toArray().length)
-	// 	});
-	// },
 
 
 	confirm : function(invite) {
 		answer = confirm("are you sure you want to confirm the invitation?");
 		if (answer) {
 			//check if already has an apartment
-			roomie = this.get('content');
+			var roomie = this.get('content');
 			if (roomie.get('apartment') != null) {
 				alert("you already have an apartment!");
 			}
 			else {
 
 				var apartmentToAdd = invite.get('apartment');
-				roomie.set('apartment',apartmentToAdd);
-				roomie.save();
-				roomie.one('didUpdate', function() {
-					//delete the invite after the roomie confirmed
-					var transaction = this.get("store").transaction();
-					transaction.add(invite);
-					invite.deleteRecord();
-					transaction.commit();
-					alert("the apartment has been added!");
+				apartmentToAdd.set("roomiesNum",apartmentToAdd.get('roomiesNum') + 1);
+				apartmentToAdd.save();
+				apartmentToAdd.one('didUpdate', function() {
+					roomie.set('apartment',apartmentToAdd);
+					roomie.save();
+					roomie.one('didUpdate', function() {
+						//delete the invite after the roomie confirmed
+						var transaction = this.get("store").transaction();
+						transaction.add(invite);
+						invite.deleteRecord();
+						transaction.commit();
+						alert("the apartment has been added!");
+					});
 				});
 			}
 		}
@@ -67,6 +59,16 @@ Yeomanwebapp.RoomieMyInvitesController = Ember.ObjectController.extend({
 					invite.deleteRecord();
 					transaction.commit();
 		}
-	}
-	
+	},
+
+	setNewToFalse : function() {
+		debugger;
+ 		var transaction = this.get("store").transaction();
+		var newInvitesArray = newInvites.toArray();
+		newInvitesArray.forEach(function(invite) {
+			invite.set("new",false);
+			transaction.add(invite);
+		});
+		transaction.commit();
+	}.property()
 })

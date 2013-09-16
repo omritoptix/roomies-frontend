@@ -1,20 +1,11 @@
 <legend>Details</legend>
 	<lable>username : {{username}}</label> 
 	<label>password : {{password}}</label>
-	<lable>apartment : {{apartment.address}}</label>
+	<lable>apartment : 
+		{{#if apartment}}
+			{{apartment.address}}
+		{{else}}
+			No Apartment has been added
+		{{/if}}
+	</label>
 	<br>
-{{!-- 	{{#linkTo 'roomie.myInvites'}}My Invites{{/linkTo}}
-	<!-- call the function of the controller -->
-	{{newInvitesCalc}}
-	{{#if newInvitesNum}}
-		  - {{newInvitesNum}} New
-	{{else}}
-		- no new invites.
-	{{/if}}
-	<br>
-	{{#linkTo 'roomie.edit' this}}Edit |{{/linkTo}}
-	{{#linkTo 'roomies'}}Back |{{/linkTo}}
-	<!-- if the roomie has an apartment, allow him to invite roomies -->
-	{{#if apartment}}
-	{{#linkTo 'roomie.invite' this}}Invite Roomies{{/linkTo}}
-	{{/if}} --}}

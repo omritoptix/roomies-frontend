@@ -1,17 +1,32 @@
-<ul>My Invites</ul>
-{{!-- {{getMyInvites}} --}}
-<!-- if there are no invites -->
-{{log controller.myInvitesLength}}
+<legend>My Invites</legend>
+<!-- check if there are invites. if there are, check there status , where 
+ 0 - declined, 1- accepted, 2 - not sent answer -  -->
 {{#if controller.myInvitesLength}}
+	<table class="table table-hover">
+		<tr>
+			<th>Invite From</th>
+			<th>Apartment</th>
+			<th>action</th>
+		</tr>
 	{{#each controller.myInvites}}
-			<ul><b>Invite From</b>: {{fromRoomie.username}} 
-			<b>Apartment</b> : {{apartment.address}} 
-			<b>action</b>: 
-				{{#ifCond status 2}}
-				<button {{action confirm this}}>Confirm</button> |
-				<button {{action reject this}}>Reject</button>
-				{{/ifCond}} </ul>
+			<tr>
+				<td>{{fromRoomie.username}} </td>
+				<td>{{apartment.address}}</td>
+				<td>{{#ifCond status 2}}
+					<button class="btn btn-success" {{action confirm this}}>Confirm</button>
+{{!-- 						{{#view Yeomanwebapp.MyInvitesConfirmButton contentBinding="this"}}Confirm{{/view}} --}}
+					<button class="btn btn-danger" {{action reject this}}>Reject</button>
+{{!-- 						{{#view Yeomanwebapp.MyInvitesRejectButton contentBinding="this"}}Reject{{/view}}	 --}}					
+					{{/ifCond}} 
+				</td>
+			</tr>
+					
 	{{/each}}
-{{else}}
-	<h4> There are no pending Invites </h4>
+				{{else}}
+				<h4> There are no pending Invites </h4>
+				{{/if}}
+
+{{! After the template is rendered, set 'new' attribute in invite to false}}
+{{#if controller.newInvitesLength}}
+	{{setNewToFalse}}
 {{/if}}

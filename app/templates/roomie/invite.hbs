@@ -1,7 +1,21 @@
-<h3>Search for roomie to invite : </h3>
-{{view Ember.TextField valueBinding="query"}}
-<button {{action searchRoomie}}>Search</button>
-<ul>{{#each controller.roomiesToInvite}}
-	<li><button {{action inviteRoomie this}}>{{username}}</button></li>
-{{/each}}
-</ul>
+<legend>Roomies To Invite</legend>
+<form class="form-search">
+	<div class="control-group">
+ 		{{#view Yeomanwebapp.keyPressSearch valueBinding="query"}}{{/view}}
+	</div>
+</form>
+{{#if isDisplayTableHeader}}
+	<table class="table table-hover">
+		<tr>
+			<th>Username</th>
+			<th>#</th>
+		</tr>
+	{{#each controller.roomiesToInvite}}
+		<tr>
+			<td>{{username}}</td>
+			<td><button class="btn btn-success" {{action inviteRoomie this}}>Invite!</button></td>
+		</tr>
+	{{/each}}
+	</table>
+{{/if}}
+

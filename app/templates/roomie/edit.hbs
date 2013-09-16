@@ -1,16 +1,46 @@
-<legend>Edit</legend>
-	<label>username:{{view Ember.TextField valueBinding="username"}} </label>
-	<label>password: {{view Ember.TextField valueBinding="password"}} </label>
-	<label>apartment:
-	{{#if apartment.address}}
-		{{apartment.address}}
-	{{else}}
-		no apartment </label>
-	{{/if}}
-	<button {{bindAttr disabled="noApartment"}} {{action addApartment}}>Add Apartment</button>
-	<button {{bindAttr disabled="isApartment"}} {{action removeApartment}}>Remove Apartment</button>
-	<button {{action save}}>Save</button>
-	<button {{action back}}>Back</button>
+<form class="form-horizontal">
+	<legend>Edit</legend>
+	<fieldset>
+		<div class="control-group">
+			<label class="control-label">username</label>
+			<div class="controls">
+			{{view Ember.TextField valueBinding="username"}}
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">password</label>
+			<div class="controls">
+			{{view Ember.TextField valueBinding="password"}}
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">apartment</label>
+			<div class="controls">
+			{{#if apartment.address}}
+				{{view Ember.TextField valueBinding="apartment.address" disabled="true"}}
+			{{else}}
+				{{view Ember.TextField value="No Apartment" disabled="true"}}
+			{{/if}}
+			<div class="control-group">
+			<br>
+			<button class="btn btn-success" {{bindAttr disabled="noApartment"}} {{action addApartment}}>Add Apartmen</button>
+			<button class="btn btn-danger" {{bindAttr disabled="isApartment"}} {{action removeApartment}}>Remove Apartment</button>
+			</div>
+		</div>
+		</div>
+		<div class="control-group">
+		<button class="btn btn-primary" {{action save}}>Save</button>
+		<button class="btn" {{action back}}>Back</button>
+		</div>
+	</fieldset>
+</form>	
+
+
+
+
+
+
+
 <!-- 	<button {{bindAttr disabled="test"}}>Back</button>
 	{{#view Yeomanwebapp.AddApartment}}Add Apartment{{/view}}
 	{{#view Yeomanwebapp.RemoveApartment}}Remove Apartment{{/view}} -->

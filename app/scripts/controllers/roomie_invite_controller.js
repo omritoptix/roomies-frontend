@@ -1,11 +1,16 @@
 Yeomanwebapp.RoomieInviteController = Em.ObjectController.extend({
-	query:null,
+	query:'',
 	roomiesToInvite:null,
-
-	searchRoomie : function() {
+	isDisplayTableHeader:false,
+	
+	searchRoomie : function(keyCode) {
 		var self = this;
 		query = this.get('query');
-		regex = new RegExp(query);
+		if (query  == null) {
+			query ='' }
+		// added "i" to ignore case
+		regex = new RegExp(query,"i");
+		roomieToRemove = this.get('content');
 		//added {} to find() since there is an ember issue - 
 		// else it won't call didLoad
 		searchResults = Yeomanwebapp.Roomie.find({});
@@ -13,6 +18,14 @@ Yeomanwebapp.RoomieInviteController = Em.ObjectController.extend({
 			var roomiesToInvite =  this.filter(function(roomie) {
   				return regex.test(roomie.get('username'));
 			});
+			//remove the roomie who searched, from the search results
+			roomiesToInvite.removeObject(roomieToRemove);
+			if (roomiesToInvite.length > 0) {
+				self.set("isDisplayTableHeader",true);
+			}
+			else {
+				self.set("isDisplayTableHeader",false);
+			}
 			self.set("roomiesToInvite",roomiesToInvite);
 		});
 	},

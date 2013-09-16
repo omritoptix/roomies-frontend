@@ -26,6 +26,20 @@ Yeomanwebapp.Store = DS.Store.extend({
                   toRoomie : {embedded : 'load'},
                   apartment : {embedded:'load'}
                 });
+                this.mappings.set('Yeomanwebapp.Bill', {
+                  apartment : {embedded : 'load'}
+                });
+                this.mappings.set('Yeomanwebapp.RoomieBillItem', {
+                  roomie : {embedded : 'load'},
+                  billItem : {embedded : 'load'}
+
+                });
+                this.mappings.set('Yeomanwebapp.BillItem', {
+                  createdBy : {embedded : 'load'},
+                  bill : {embedded : 'load'},
+                  billType : {embedded : 'load'},
+                  RoomieBillItem : {embedded : 'load'}
+                });
             }
 
   		})

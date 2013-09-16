@@ -1,5 +1,4 @@
 Yeomanwebapp.RoomieEditController = Em.ObjectController.extend ({
-	noApartment : null,
 	save : function () {
 		var updatedRecord = this.get('content');
 		var transaction = this.get("store").transaction();
@@ -37,12 +36,20 @@ Yeomanwebapp.RoomieEditController = Em.ObjectController.extend ({
 		answer = confirm("are you sure you want to remove the apartment?");
 		if (answer) {
 			record = this.get('content');
+			if (record.get('apartment').get('roomiesNum') == 1) {
+				var apartmentRecordID = this.get('content').get('apartment').get('id');
+				apartmentRecord = Yeomanwebapp.Apartment.find(apartmentRecordID);
+				apartmentRecord.deleteRecord();
+				apartmentRecord.save();
+			}
+			else {
+				var apartmentRecord = record.get('apartment');
+				apartmentRecord.set("roomiesNum", apartmentRecord.get('roomiesNum') - 1);
+				apartmentRecord.save();
+			}
 			record.set('apartment',null);
 			record.save();
 			record.one('didUpdate', function() {
-				// update noApartment on RoomieController
-				debugger;
-				self.set("noApartment",true);
 				alert("the apartment has been removed!");
 			});
 		}
@@ -51,11 +58,12 @@ Yeomanwebapp.RoomieEditController = Em.ObjectController.extend ({
 	addApartment : function() {
 		var self = this;
 		var apartmentAddress = prompt("please enter your new apartment address");
-		if (apartmentAddress != null) {
+		if (apartmentAddress != null && apartmentAddress !='') {
 			// var transaction = this.get("store").transaction();
 			record = this.get('content');
 			newApartment = Yeomanwebapp.Apartment.createRecord();
 			newApartment.set('address',apartmentAddress);
+			newApartment.set('roomiesNum',1);
 			newApartment.save();
 			//need to wait for id from the server before we can continue
 			newApartment.addObserver('id',function() {
@@ -63,11 +71,6 @@ Yeomanwebapp.RoomieEditController = Em.ObjectController.extend ({
 				record.save();
 				record.one('didUpdate', function() {
 					newApartment.removeObserver('id');
-					debugger;
-					// roomieController = self.get('controllers.roomie');
-					// noApartment = roomieController.get('noApartment');
-					// roomieController.set("noApartment",false);
-					self.set("noApartment",true);
 					alert("The new Apartment has been added!");
 				});
 			});
