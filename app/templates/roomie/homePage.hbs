@@ -36,6 +36,21 @@
 				</td>
 				<td>{{createdBy.username}}</td>
 			{{/each}}
-
+			
+			<legend>Balance</legend>
+			<table class="table table-hover">
+				<tr>
+						{{#each controller.roomiesBills.roomies}}
+							<th>{{this.username}}</th>
+						{{/each}}
+				</tr>
+				<tr>
+						{{#each controller.roomiesBills.bills}}
+							<th>{{this}}</th>
+						{{/each}}
+				</tr>
+			</table>
 	{{/if}}
+
+
 

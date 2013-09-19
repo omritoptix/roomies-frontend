@@ -1,5 +1,5 @@
 Yeomanwebapp.TestRoute = Em.Route.extend({
 	model : function() {
-		return Yeomanwebapp.BillItem.find();
+		return Yeomanwebapp.RoomieBillItem.find();
 	}
 })

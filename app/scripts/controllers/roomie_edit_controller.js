@@ -64,16 +64,35 @@ Yeomanwebapp.RoomieEditController = Em.ObjectController.extend ({
 			newApartment = Yeomanwebapp.Apartment.createRecord();
 			newApartment.set('address',apartmentAddress);
 			newApartment.set('roomiesNum',1);
-			newApartment.save();
+			// newApartment.save();
 			//need to wait for id from the server before we can continue
-			newApartment.addObserver('id',function() {
-				record.set('apartment',newApartment);
-				record.save();
-				record.one('didUpdate', function() {
-					newApartment.removeObserver('id');
-					alert("The new Apartment has been added!");
-				});
-			});
+			// newApartment.addObserver('id',function() {
+			// 	record.set('apartment',newApartment);
+			// 	record.save();
+			// 	record.one('didUpdate', function() {
+			// 		newApartment.removeObserver('id');
+			// 		alert("The new Apartment has been added!");
+			// 	});
+			// });
+			newApartment.save().then(
+				function() {
+					//successful save
+					record.set('apartment',newApartment);
+					record.save().then(
+						function() {
+							//successful save
+							alert("The new Apartment has been added!")
+						},
+						function(error) {
+							console.log(error);
+						}
+					);
+
+				},
+				function(error) {
+					console.log(error);
+				}
+			);
 		}
 	}
 
