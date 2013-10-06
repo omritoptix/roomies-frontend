@@ -33,3 +33,42 @@ color :  #999;
 .navbar .nav > li > a.disabled:hover {
 color :  #999;
 }
+
+a.positive {
+  color :red;
+}
+
+a.negative {
+  color : green;
+}
+
+a.positive:before {
+  content:"Pay: "
+}
+
+a.negative:before {
+  content:"Get Paid: "
+}
+
+#loading-indicator{
+  position:absolute;
+  top:230px;
+  left:50%;
+}
+
+label.error { 
+float: none; 
+color: red; 
+padding-left: .5em;
+vertical-align: top; }
+
+img#loading-indicator.hide {
+  display : none;
+}
+
+.pay-modal-label {
+  font-size : 22px;
+  line-height : 25px;
+  padding-top : 3px;
+  padding-bottom : 0px;
+}

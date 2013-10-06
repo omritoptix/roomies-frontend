@@ -2,35 +2,13 @@ Yeomanwebapp.RoomieHomePageController = Em.ObjectController.extend ({
 	billItems : null,
 	monthSelected : null,
 	yearSelected : null,
-	roomiesBills : {
-		roomies : [],
-		bills : []
-	},
-	roomiesBillsDummy : {
-	roomies : [],
-	bills : []
-	},
-	monthPicker: [
-	    {desc: "January", id: 0},
-	    {desc: "February", id: 1},
-	    {desc: "March", id: 2},
-	    {desc: "April", id: 3},
-	    {desc: "May", id: 4},
-	    {desc: "June", id: 5},
-	    {desc: "July", id: 6},
-	    {desc: "August", id: 7},
-	    {desc: "September", id: 8},
-	    {desc: "October", id: 9},
-	    {desc: "November", id: 10},
-	    {desc: "December", id: 11},
-  ],
-	yearPicker: function() {
-		var x = [];
-		for (i = new Date().getFullYear(); i > 1999; i--) {
-			x.push(i);
-		}
-		return x;
-	}.property(),
+	//month and year searched for cache puposes
+	lastMonthSearched : null,
+	lastYearSearched : null,
+	//added isDispalyBillBalance since not array not updating template
+	roomiesBills : Ember.A([]),
+
+	datePicker : Yeomanwebapp.DatePicker.create(),
 
 	setDefaults : function() {
 		currentDate = new Date();
@@ -41,13 +19,20 @@ Yeomanwebapp.RoomieHomePageController = Em.ObjectController.extend ({
 	initRoomiesBillsArray : function() {
 		var self = this;
 		var apartmentRoomies = null;
-		this.get('content').get('roomies').then (
-			function(result) {
+		// this.get('content').get('roomies').then (
+			//if not using sideLoading : 
+		Yeomanwebapp.Roomie.find({apartment : this.get('content.id')}).then(
+			function(result) {				
 				//on success
 				apartmentRoomies = result.toArray();
 				apartmentRoomies.forEach(function(roomie) {
-					self.roomiesBillsDummy.roomies.push(roomie);
-					self.roomiesBillsDummy.bills.push(0);
+					var roomieId = roomie.get('id');
+					self.roomiesBills.pushObject({
+						username : roomie.get('username'),
+						roomie : roomie.get('id'),
+						balance : 0,
+						billDetails : Ember.A([]),
+					})
 				});
 				
 			});
@@ -56,32 +41,37 @@ Yeomanwebapp.RoomieHomePageController = Em.ObjectController.extend ({
 
 	calcBillShare : function() {
 		var self = this;
-		//added billItem length so that roomiesBills
-		//will be set only once, the template not binding
-		//in the second time it's updated for some reason.
-		var billItemsLength = this.billItems.length;
 		this.billItems.forEach(function(billItem) {
-			billItemPromise = billItem.get('roomieBillItem').then(
+			// billItem.get('roomieBillItem').then(
+			//if not using sideloading : 
+				Yeomanwebapp.RoomieBillItem.find({billItem : billItem.get('id')}).then(
+				// self.get('store').findMany(Yeomanwebapp.RoomieBillItem, {billItem : billItem.get('id')}).then(
 				function(result) {
 					var roomieBillItems = result.toArray();
 					var amount = billItem.get('amount');
-					var numOfRoomies = roomieBillItems.toArray().length;
-					roomieBillItems.forEach(function(roomieBillItem) {
-						roomieIndex = self.roomiesBillsDummy.roomies.indexOf(roomieBillItem.get('roomie'));
-						self.roomiesBillsDummy.bills[roomieIndex] += (amount/numOfRoomies);
-					});
-					billItemsLength--;
-				}).then(
-					//after roomiesBillsDummy array is set, set the 
-					//roomiesBills array using the "set" method so
-					//the new value will bind to the template
-					function() {
-						if (billItemsLength == 0) {
-							self.set("roomiesBills",self.roomiesBillsDummy);
-							console.log(self.roomiesBills.bills[0]);
+					billItem.get('billType').then(
+						function(result) {
+							var billType = result.get('description');
+							var numOfRoomies = roomieBillItems.toArray().length;
+							roomieBillItems.forEach(function(roomieBillItem) {
+								amountPaid = roomieBillItem.get('amountPaid');
+								var currRoomieBillArray = self.roomiesBills.filter(function(bill) {
+															return bill.roomie == roomieBillItem.get('roomie.id');
+														});
+								var currRoomieBill = currRoomieBillArray.objectAt(0);
+								var amountBalanceOnBillItem = (amount/numOfRoomies)-amountPaid;	
+								currRoomieBill.billDetails.pushObject({type :billType , amount : amountBalanceOnBillItem});
+								var currBalance = currRoomieBill.balance + ((amount/numOfRoomies)-amountPaid);
+								Ember.set(currRoomieBill,"balance",currBalance);
+							});
 						}
-					});
-
+					);
+				},
+				function(error) {
+					debugger;
+					console.log(error);
+				}
+			);
 		});
 
 	}.property('billItems'),
@@ -91,34 +81,54 @@ Yeomanwebapp.RoomieHomePageController = Em.ObjectController.extend ({
 		var bill = []
 		var billItem = [];
 		var roomieBillItem = []
+		var isTheSameSearch = false;
+		if (self.lastMonthSearched != null) {
+			if ((self.lastMonthSearched == this.get('monthSelected')) && self.lastYearSearched == this.get('yearSelected')) {
+				isTheSameSearch = true;
+			}
+		}
+		// if (isTheSameSearch) {
+		// 	return;
+		// }
+		//init roomiesBills array;
+		if (this.get('roomiesBills.length') > 0) {
+			self.roomiesBills.forEach(function(roomieBill) {
+				roomieBill.billDetails.clear();
+				Ember.set(roomieBill,"balance",0);
+			});
+	  	}
 		monthSelected = this.get('monthSelected');
 		yearSelected = this.get('yearSelected');
-		bill = Yeomanwebapp.Bill.find({
+		self.set("lastMonthSearched",monthSelected);
+		self.set("lastYearSearched",yearSelected);
+		self.set("isDisplayBillBalance",false);
+		Yeomanwebapp.Bill.find({
 			apartment : this.get('content').get('id'),
 			year : yearSelected,
 			month : monthSelected
-		});
-			bill.one('didLoad',function() {
-				if (bill.toArray().length != 0) {
-					billItem = Yeomanwebapp.BillItem.find({
+		}).then(
+				function(result) {
+					var bill = result;
+					if (bill.toArray().length != 0) {
+						billItem = Yeomanwebapp.BillItem.find({
 						bill : bill.objectAt(0).get('id')
-					});
-					billItem.one('didLoad',function() {
-						if (billItem.toArray().legnth != 0) {
-							self.set("billItems",billItem.toArray());
-						}
-						else {
-							self.set("billItems",null);
-						}
-					});
+						}).then(
+							function(result) {
+								var billItem = result;
+								if (billItem.toArray().legnth != 0) {
+									self.set("billItems",billItem.toArray());
+								}
+								else {
+									self.set("billItems",null);
+								}
+							}
+						);
+					}
+					else {
+						self.set("billItems",null);	
+					}
 				}
-
-				else {
-					self.set("billItems",null);
-				}
-			});
-		}
-
-
+			);
+	}
 
 })

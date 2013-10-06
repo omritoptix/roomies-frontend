@@ -19,13 +19,14 @@ var Yeomanwebapp = window.Yeomanwebapp = Ember.Application.create({
 // Ember.keys(Ember.TEMPLATES);
 
 /* Order and include as you please. */
+require('scripts/custom/*');
+require('bower_components/chosen-not-bower/*')
 require('scripts/controllers/*');
 require('bower_components/tastypie-adapter/wormhole');
 require('bower_components/tastypie-adapter/porthole');
 require('bower_components/tastypie-adapter/tastypie_adapter');
 require('bower_components/tastypie-adapter/tastypie_serializer');
 /*require('libs/handlebars_helpers/*');*/
-require('scripts/custom/*');
 require('scripts/store');
 require('scripts/models/*');
 require('scripts/routes/*');

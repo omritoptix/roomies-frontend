@@ -261,4 +261,42 @@ Ember.Handlebars.registerHelper('format-date', function(date) {
 Ember.Handlebars.registerHelper('pluralize', function(noun,num) {
     return attache.plural(noun, this.get(num));
 });
+/**
+ * 
+ * will substract two numbers
+ * 
+ * usage
+ * 
+ * ```handlebar
+ * {{substract num1 num2}}
+ * ```
+ * 
+ * 
+ * @param {string|number} num1 
+ * @param {string|number} num2
+ * @return {number}
+ */
+Ember.Handlebars.registerHelper('substract', function(num1,num2) {
+    return (num1-num2);
+});
+/**
+ * 
+ * will add two numbers
+ * 
+ * usage
+ * 
+ * ```handlebar
+ * {{add num1 num2}}
+ * ```
+ * 
+ * 
+ * @param {string|number} num1 
+ * @param {string|number} num2
+ * @return {number}
+ */
+Ember.Handlebars.registerHelper('add', function(num1,num2) {
+    return (num1+num2);
+});
+
+
 

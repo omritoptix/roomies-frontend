@@ -16,6 +16,11 @@ Yeomanwebapp.Router.map(function () {
     this.route('invite');
     this.route('myInvites');
     this.route('homePage');
+    this.resource('bills', function() {
+      this.route('add');
+      this.route('edit');
+    });
+
   });
   
 

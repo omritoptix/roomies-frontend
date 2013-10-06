@@ -12,13 +12,59 @@ Yeomanwebapp.ShowRoomiesPopOver = Em.View.extend({
 		evt.preventDefault();
 		currBillItem = this.get('context');
 		roomieBillItems = currBillItem.get('roomieBillItem').toArray();
-		var usernames = [];
+		var roomiesBillsPopOver = {
+			usernames :[],
+			amountPaid : []
+		};
 		roomieBillItems.forEach(function(roomieBillItem) {
-			usernames.push(roomieBillItem.get('roomie').get('username'));
+			roomiesBillsPopOver.usernames.push(roomieBillItem.get('roomie').get('username'));
+			roomiesBillsPopOver.amountPaid.push(roomieBillItem.get('amountPaid'));
 		});
+
+		var popOverContentToDisplay = "";
+
+		for (var i=0; i< roomiesBillsPopOver.usernames.length;i++) {
+			popOverContentToDisplay += roomiesBillsPopOver.usernames[i] + ":" + roomiesBillsPopOver.amountPaid[i] + "\n";
+		}
+
 		this.$().popover({
-		content : usernames,
-		title : "Assigned Roomies"
+		content : popOverContentToDisplay,
+		title : "Assigned Roomies",
+		trigger : "manual"
 		});
+
+		this.$().popover('toggle');
 	}
+});
+
+
+Yeomanwebapp.Balance = Em.View.extend ({
+	tagName : 'a',
+	attributeBindings : ['href'],
+	href : "#",
+	classNameBindings : ['positive','negative','zero'],
+	positive : function() {
+		if (this.get('context.balance') > 0) {
+			return true;
+		}
+	}.property('controller.roomiesBills.@each.balance'),
+
+	negative : function() {
+		if (this.get('context.balance') < 0) {
+			this.set("context.balance",Math.abs(this.get('context.balance')));
+			return true;
+		}
+	}.property('controller.roomiesBills.@each.balance'),
+
+	zero : function() {
+		if (this.get('context.balance') == 0)
+			return true;
+	},
+
+	click : function(evt) {
+		// debugger;	
+		evt.preventDefault();
+		this.$().next().modal('show');
+	}
+
 })
