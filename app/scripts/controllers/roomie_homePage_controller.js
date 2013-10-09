@@ -55,13 +55,14 @@ Yeomanwebapp.RoomieHomePageController = Em.ObjectController.extend ({
 							var numOfRoomies = roomieBillItems.toArray().length;
 							roomieBillItems.forEach(function(roomieBillItem) {
 								amountPaid = roomieBillItem.get('amountPaid');
+								needToPay = roomieBillItem.get('needToPay');
 								var currRoomieBillArray = self.roomiesBills.filter(function(bill) {
 															return bill.roomie == roomieBillItem.get('roomie.id');
 														});
 								var currRoomieBill = currRoomieBillArray.objectAt(0);
-								var amountBalanceOnBillItem = (amount/numOfRoomies)-amountPaid;	
-								currRoomieBill.billDetails.pushObject({type :billType , amount : amountBalanceOnBillItem});
-								var currBalance = currRoomieBill.balance + ((amount/numOfRoomies)-amountPaid);
+								var amountBalanceOnBillItem = needToPay-amountPaid;	
+								currRoomieBill.billDetails.pushObject({type :billType , total: amount, amountLeft : amountBalanceOnBillItem, needToPay : needToPay});
+								var currBalance = currRoomieBill.balance + (needToPay - amountPaid);
 								Ember.set(currRoomieBill,"balance",currBalance);
 							});
 						}

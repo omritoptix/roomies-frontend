@@ -19,6 +19,7 @@ Yeomanwebapp.Router.map(function () {
     this.resource('bills', function() {
       this.route('add');
       this.route('edit');
+      this.route('manage');
     });
 
   });

@@ -60,12 +60,16 @@
 								  	<table class="table table-hover">
 										<tr>
 											<th>Bill Type</th>
+											<th>Total</th>
+											<th>Need To Pay</th>
 											<th>Amount Left</th>
 										</tr>
 										{{#each this.billDetails}}
 											<tr>
 												<td>{{type}}</td>
-												<td>{{amount}}</td>
+												<td>{{total}}</td>
+												<td>{{needToPay}}</td>
+												<td>{{amountLeft}}</td>
 											</tr>
 										{{/each}}
 									</table>
