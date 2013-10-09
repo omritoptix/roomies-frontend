@@ -12,35 +12,36 @@
 				contentBinding="datePicker.yearPicker"
 				valueBinding = "yearSelected"}}
 
-	<button class="btn btn-primary" {{action addBill}} {{bindAttr disabled="isDisplayGrid"}}>Add Bill</button>
+	<button class="btn btn-primary" {{action editBill}} {{bindAttr disabled="isEditBill"}}>Edit Bill</button>
 	<button class="btn btn-danger" {{action clearBill}} {{bindAttr disabled="isClearBillDisabled"}}>Clear</button>
 
 </form>
-<form id="billItemsForm" {{action "saveBill" on="submit"}}>
 
-	{{#if isDisplayGrid}}
+<form id="billItemsForm" {{action "saveBillItems" on="submit"}}>
+
+	{{#if isEditBill}}
 		<legend>Bill Items</legend>
 		<table id="addBillItemTable" class="table">
 			<tr>	
 				<th>Type</th>
 				<th>Amount</th>
 				<th>Assigned Roomies</th>
-				<th>
 			</tr>
 			{{#each billItems}}
 				<tr>
-					<td>{{view Yeomanwebapp.BillTypeSelect
-							contentBinding="controller.billTypes"
+					<td>{{!-- {{view Yeomanwebapp.BillTypeSelect
+							contentBinding="billTypeString"
 							valueBinding="billTypeString"
-							}}
+							}} --}}
+						{{view Ember.TextField valueBinding="billTypeString"}}
 
 						{{view Yeomanwebapp.OtherView valueBinding="other" placeholder="other" name="cother"}}
 			
 
 					<td>
-						{{view Yeomanwebapp.AmountView valueBinding="amount" placeholder="amount" name="camountPaid"}}</td>
-					{{#if isNew}}
-					<td>{{view Ember.Select
+						{{view Ember.TextField valueBinding="amount" placeholder="amount" name="camountPaid"}}</td>
+
+{{!-- 					<td>{{view Ember.Select
 							contentBinding="apartmentRoomies"
 							optionLabelPath="content.name"
 							optionValuePath="content.id"
@@ -48,17 +49,15 @@
 							classNames="multiple"
 							selectionBinding="roomiesAssigned"
 							name="capartmentRoomies"
-						}}</td>
-					{{/if}}
-					{{#unless isNew}}
+						}}</td> --}}
 					<td>{{view SelectTestView
 							contentBinding="roomiesAssigned"
 							optionLabelPath="content.name"
 							optionValuePath="content.id"
 							multiple="true"
 							classNames="multiple"
+							name="capartmentRoomies"
 					}}</td>
-					{{/unless}}
 					<td>
 						 
 						<!-- Modal -->
@@ -67,14 +66,14 @@
 
 						<div class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 							<div class="modal-header">
-						   		{{!-- {{#view Yeomanwebapp.DismissModal}}x{{/view}} --}}
+						   		{{#view Yeomanwebapp.DismissModal}}x{{/view}}
 						    	<h3 id="myModalLabel">Payments : {{amount}} To Pay</h3>
 						  	</div>
 						  	<div class="modal-body">
 						  		{{#each roomiesAssigned}}
 						  			<div class="control-group">
 										<span class="label label-important pay-modal-label">{{name}}</span> 
-							  	   		{{view Ember.TextField valueBinding="amountPaid" placeholder="Amount Paid : default 0"
+							  	   		{{view Ember.TextField valueBinding="amountPaid" placeholder="Amount Paid"
 							  			}}
 							  		</div>
 							  		<br>

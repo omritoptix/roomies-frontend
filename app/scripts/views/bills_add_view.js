@@ -1,5 +1,12 @@
 Yeomanwebapp.BillTypeSelect = Em.Select.extend({
 
+	didInsertElement : function() {
+		if (this.get('context.isNew') == false) {
+			this.$().attr('disabled','disabled');
+		}
+
+	},
+
 	change : function (evt) {
 		if (evt.currentTarget.value == "Other") {
 			this.$().next().show()
@@ -13,8 +20,22 @@ Yeomanwebapp.BillTypeSelect = Em.Select.extend({
 
 Yeomanwebapp.OtherView = Em.TextField.extend({
 	 didInsertElement : function() {
-	 	this.$().hide()
+	 	if (Ember.isNone(this.get('context.other'))) {
+	 		this.$().hide()
+	 	}
+	 	else {
+	 		this.$().attr('disabled','disabled');
+	 	}
+
 	 }
+})
+
+Yeomanwebapp.AmountView = Em.TextField.extend({
+	didInsertElement : function() {
+		if (this.get('context.isNew') == false) {
+			this.$().attr('disabled','disabled');
+		}
+	}
 })
 
 
@@ -27,7 +48,9 @@ Yeomanwebapp.Pay = Em.View.extend({
 		var amountString = this.get('context.amount');
 		var amountParsed = parseFloat(amountString);
 		if ((this.get('context.roomiesAssigned.length') > 0) && (isNaN(amountString) == false) && (amountParsed >=0)) {
-			this.$().next().modal()
+			this.$().next().modal({
+				keyboard : false
+			});
 		}
 		else if ((amountParsed < 0) || (isNaN(amountString) == true)) {
 			alert("you must enter a valid amount to pay!");
@@ -46,12 +69,16 @@ Yeomanwebapp.PaymentModalValidate = Em.View.extend({
 	attributeBindings:['type'],
 	type:'button',
 	click : function() {
+		debugger;
 		var invalid = false;
 		var roomiesAssigned = this.get('context.roomiesAssigned');
 		var paid = 0;
 		roomiesAssigned.forEach(function(item) {
 			var amountPaidParsed = parseFloat(item.amountPaid);
-			if (isNaN(item.amountPaid) || (amountPaidParsed < 0)) {
+			//init default value to 0 if no input was entered
+			if (item.amountPaid == "") amountPaidParsed = 0;
+			//check input is valid
+			if (isNaN(amountPaidParsed) || (amountPaidParsed < 0)) {
 				alert("you must enter a valid amount to pay!")
 				this.set("invalid", true);
 			} 
@@ -62,7 +89,7 @@ Yeomanwebapp.PaymentModalValidate = Em.View.extend({
 		if (invalid) {
 			return;
 		}
-		else if (paid < this.get('context.amount')) {
+		else if (paid <= this.get('context.amount')) {
 			this.$().parent().parent().modal('hide')
 		}
 		else {
@@ -112,6 +139,7 @@ Yeomanwebapp.BillsAddView = Em.View.extend({
 })
 
 Yeomanwebapp.DismissModal = Em.View.extend({
+	test : Ember.A([]),
 	classNames:['close'],
 	attributeBindings:['dataDismiss:data-dismiss','ariaHidden:aria-hidden'],
 	dataDismiss:'modal',
@@ -123,6 +151,17 @@ Yeomanwebapp.DismissModal = Em.View.extend({
 		});
 		
 	}
+})
+
+SelectTestView  = Em.Select.extend({
+	roomiesAssigned : null,
+	classNames:['SelectTest'],
+	attributeBindings : ['disabled'],
+	disabled : "disabled",
+	didInsertElement : function() {
+		this.$("option").attr('selected','selected');
+		this.$().chosen();
+	},
 })
 
 

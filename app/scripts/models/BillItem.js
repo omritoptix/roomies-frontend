@@ -3,7 +3,7 @@ Yeomanwebapp.BillItem = DS.Model.extend({
 	other : DS.attr('string'),
 	dateCreated : DS.attr('date'),
 	createdBy : DS.belongsTo('Yeomanwebapp.Roomie'),
-	billType : DS.belongsTo('Yeomanwebapp.BillType'),
+	billType : DS.belongsTo('Yeomanwebapp.BillType'),	
 	bill : DS.belongsTo('Yeomanwebapp.Bill'),
-	roomieBillItem : DS.hasMany('Yeomanwebapp.RoomieBillItem')
+	roomieBillItem : DS.hasMany('Yeomanwebapp.RoomieBillItem',{ dependent: 'destroy' })
 })
