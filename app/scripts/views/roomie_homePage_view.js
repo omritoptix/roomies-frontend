@@ -24,7 +24,7 @@ Yeomanwebapp.ShowRoomiesPopOver = Em.View.extend({
 		var popOverContentToDisplay = "";
 
 		for (var i=0; i< roomiesBillsPopOver.usernames.length;i++) {
-			popOverContentToDisplay += roomiesBillsPopOver.usernames[i] + ":" + roomiesBillsPopOver.amountPaid[i] + "\n";
+			popOverContentToDisplay += roomiesBillsPopOver.usernames[i] + ":" + roomiesBillsPopOver.amountPaid[i] + " Paid |" + "\r\n";
 		}
 
 		this.$().popover({

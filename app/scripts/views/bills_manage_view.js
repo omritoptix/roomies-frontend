@@ -63,7 +63,7 @@ Yeomanwebapp.Pay = Em.View.extend({
 
 			this.$().next().modal({
 				keyboard : false,
-				// backdrop : false
+				backdrop : 'static'
 			});
 		}
 		else if ((amountParsed < 0) || (isNaN(amountParsed) == true)) {
