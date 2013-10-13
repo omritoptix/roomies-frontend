@@ -187,13 +187,10 @@ Yeomanwebapp.RoomiesSelectEditView  = Em.Select.extend({
 
 Yeomanwebapp.RoomiesSelectNewView = Em.Select.extend({
 	didInsertElement : function() {
-		debugger;
-		// this.set("context.roomiesAssigned",this.get('context.apartmentRoomies'));
-		// this.$("option").attr('selected','selected');
 		this.$().chosen();
-		// this.$().chosen();
-		// this.$().trigger("chosen:updated");
-
+		this.$('option').prop('selected', true);
+		this.$().trigger('change')
+    	this.$().trigger("chosen:updated");
 	}
 })
 

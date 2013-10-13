@@ -12,10 +12,14 @@ Yeomanwebapp.Router.map(function () {
   this.resource('test',{path:'/test'});
 
   this.resource('roomie', {path:'/roomie/:roomie_id'}, function() {
-  	this.route('edit');
+    this.route('edit');
     this.route('invite');
     this.route('myInvites');
-    this.route('homePage');
+    // this.route('homePage');
+    this.resource('balance', function() {
+      this.route('monthly');
+      this.route('yearly');
+    });
     this.resource('bills', function() {
       this.route('add');
       this.route('edit');

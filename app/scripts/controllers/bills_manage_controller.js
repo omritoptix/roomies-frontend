@@ -48,6 +48,7 @@ Yeomanwebapp.BillsManageController = Em.ObjectController.extend({
 
 
 	addBill : function() {
+		this.clearBill();
 		var self = this;
 		var monthSelected = this.get('monthSelected');
 		var yearSelected = this.get('yearSelected');

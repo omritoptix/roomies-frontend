@@ -1,0 +1,89 @@
+<legend>Home</legend>
+	{{!set default year and month for current date}}
+	{{setDefaults}}
+	<form class="form-inline">
+		{{! add multiple=true and classNames="someClass"}}
+		Month : {{view Ember.Select
+					contentBinding="datePicker.monthPicker"
+					optionLabelPath="content.desc"
+					optionValuePath="content.id"
+					valueBinding = "monthSelected"}}
+
+		&nbsp;&nbsp;&nbsp;Year : {{view Ember.Select 
+			contentBinding="datePicker.yearPicker"
+			valueBinding = "yearSelected"}}
+		<button class="btn btn-primary" {{action searchBill}}>Search Bill</button>
+
+	</form>
+
+	{{#if billItems}}
+		{{initRoomiesBillsArray}}
+		{{calcBillShare}}
+		<table class="table table-hover">
+			<tr>
+				<th>Date Created</th>
+				<th>Bill Type</th>
+				<th>Amount</th>
+				<th>Assigned Roomies</th>
+				<th>Created By</th>
+			</tr>
+
+			{{#each controller.billItems}}
+			<tr>
+				<td>{{format-date dateCreated}}</th>
+				<td>{{billType.description}}</td>
+				<td>{{amount}}</td>
+				<td>{{#view Yeomanwebapp.ShowRoomiesPopOver}}{{roomieBillItem.length}} {{pluralize Roomie roomieBillItem.length}}{{/view}}
+				</td>
+				<td>{{createdBy.username}}</td>
+			{{/each}}
+
+			<legend>Balance</legend>
+			{{log roomiesBills}}
+			<table class="table">
+				<tr>
+					{{#each controller.roomiesBills}}
+						<th>{{this.username}}</th>
+					
+					{{/each}}
+				</tr>
+				<tr>
+					{{#each controller.roomiesBills}}
+						<td>
+							{{#view Yeomanwebapp.Balance}}{{this.balance}}{{/view}}
+							<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  							<div class="modal-header">
+								    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+								    <h3 id="myModalLabel">Bill Details</h3>
+								</div>
+								<div class="modal-body">
+								  	<table class="table table-hover">
+										<tr>
+											<th>Bill Type</th>
+											<th>Total</th>
+											<th>Need To Pay</th>
+											<th>Amount Left</th>
+										</tr>
+										{{#each this.billDetails}}
+											<tr>
+												<td>{{type}}</td>
+												<td>{{total}}</td>
+												<td>{{needToPay}}</td>
+												<td>{{amountLeft}}</td>
+											</tr>
+										{{/each}}
+									</table>
+								</div>
+								<div class="modal-footer">
+								    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+								</div>
+							</div>	
+						</td>								
+					{{/each}}
+				</tr>
+			</table>
+	{{/if}}
+
+
+
+
