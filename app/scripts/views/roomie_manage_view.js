@@ -60,6 +60,7 @@ Yeomanwebapp.Pay = Em.View.extend({
 					Ember.set(roomieAssigned,"needToPay",defaultNeedToPay);
 					Ember.set(roomieAssigned,"amountPaid",defaultNeedToPay);
 					Ember.set(roomieAssigned,"isAmountInit",true);
+					Ember.set(roomieAssigned,"isPayButtonClicked",true);
 				});
 			}
 
@@ -98,7 +99,7 @@ Yeomanwebapp.PaymentModalValidate = Em.View.extend({
 			var needToPayParsed = parseFloat(item.needToPay);
 			//check input is valid
 			if (isNaN(amountPaidParsed) || (amountPaidParsed < 0) || isNaN(needToPayParsed) || (needToPayParsed < 0)) {
-				alert("you must enter a valid amount to pay!")
+				alert("you must enter a valid amount to pay!");
 				this.set("invalid", true);
 			}
 			else{
@@ -110,13 +111,13 @@ Yeomanwebapp.PaymentModalValidate = Em.View.extend({
 			return;
 		}
 		else if ((totalAmountPaid <= this.get('context.amount')) && (totalAmountNeedToPay == this.get('context.amount'))) {
-			this.$().parent().parent().modal('hide')
+			this.$().parent().parent().modal('hide');
 		}
 		else if (totalAmountNeedToPay < this.get('context.amount')) {
-			alert("You need to pay the exact amount!")
+			alert("You need to pay the exact amount!");
 		}
 		else {
-			alert("You can't pay more than the bill item amount!")
+			alert("You can't pay more than the bill item amount!");
 		}
 	}
 })

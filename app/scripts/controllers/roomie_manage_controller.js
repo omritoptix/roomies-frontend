@@ -39,6 +39,7 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 						needToPay : 0,
 						amountPaid : 0,
 						isAmountInit : false,
+						isPayButtonClicked : false
 					});
 				});
 			}
@@ -109,12 +110,14 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 													var roomieBillItems = result.toArray();
 													roomieBillItems.forEach(function(roomieBillItem) {
 														var currRoomie = Yeomanwebapp.Roomie.find(roomieBillItem.get('roomie.id'));
+														debugger;
 														roomiesAssigned.pushObject({
 															name: currRoomie.get('username'),
 															id : currRoomie.get('id'),
 															needToPay : roomieBillItem.get('needToPay'),
 															amountPaid : roomieBillItem.get('amountPaid'),
-															isAmountInit : true
+															isAmountInit : true,
+															isPayButtonClicked : false 
 														});
 													});
 													self.addItem(billTypeString,isOtherDisabled,roomiesAssigned,other,amount,isNew,billItemId);
@@ -158,7 +161,6 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 			isNew : isNew,
 			billTypeString  : billTypeString,
 			isOtherDisabled : isOtherDisabled,
-			test : {id : 12},
 			roomiesAssigned  : Ember.copy(roomiesAssigned),
 			apartmentRoomies : JSON.parse(JSON.stringify(this.apartmentRoomies)),
 			other : other,
@@ -194,7 +196,7 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 			self.billItemsToDelete.pushObject(item);
 		}
 
-		if (this.get('billItems.length') == 0) {
+		if ((this.get('billItems.length') == 0) && (this.get('billItemsToDelete.length') == 0)) {
 			this.set("isSaveDisabled",true);
 		}
 	},
@@ -247,7 +249,8 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 		});
 
 		//count total roomies in bill items so
-		//only in the last save of roomies will display
+		//only in the last save of roomies will display a done message
+		debugger;
 		var totalRoomiesInRecords = 0;
 		self.billItems.forEach(function(item) {
 			totalRoomiesInRecords += item.get('roomiesAssigned.length');
@@ -274,9 +277,23 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 								billItem.get('roomiesAssigned').forEach(function(roomie) {
 									Yeomanwebapp.Roomie.find(roomie.id).then(
 										function(result) {
+											//check if pay button has been clicked and amounts were set,
+											//else set the amount roomies need to pay and paid automatically
+											debugger;
+											var needToPay = 0;
+											var amountPaid = 0;
+											var numOfRoomiesAssigned = billItem.get('roomiesAssigned.length');
+											var amount = billItem.get('amount');
+											if (!roomie.isPayButtonClicked) {
+												needToPay = parseFloat(amount/numOfRoomiesAssigned);
+											}
+											else {
+												needToPay = parseFloat(roomie.needToPay);
+												amountPaid = parseFloat(roomie.amountPaid);
+											}
 											newRoomieBillItem = Yeomanwebapp.RoomieBillItem.createRecord({
-												needToPay : parseFloat(roomie.needToPay),
-												amountPaid : parseFloat(roomie.amountPaid),
+												needToPay : needToPay,
+												amountPaid : amountPaid,
 												roomie : result,
 												billItem : newBillItem											
 											});
@@ -348,24 +365,42 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 
 			else if(billItem.get('isNew') == false && billItem.get('isDelete') == true) {
 				debugger;
-				Yeomanwebapp.BillItem.find(billItem.get('billItemId')).then(
+				//first delete all roomieBillItems for the billItem since ember
+				//dont cascade on delete
+				Yeomanwebapp.RoomieBillItem.find({billItem : billItem.get('billItemId')}).then(
 					function(result) {
-						//tried to delete with ED eventually ended up in error
-						//due to bug , that the childern are getting put request
-						//while the parent is deleted.
-						var billItemToDelete = result;
-						transaction = self.get('store').transaction();
-						transaction.add(billItemToDelete);
-						billItemToDelete.deleteRecord();
-						transaction.commit();
-						totalRoomiesInRecords--;
-						if (totalRoomiesInRecords == 0) {
-							self.set("isLoading",false);
-							self.set("isNewBill",false);
-							self.set("isClearBillDisabled",true);
-							self.clearBill();
-							alert("Bill Has Been Saved!");
-						}				
+						var roomieBillItemsToDelete = result.toArray();
+						var numOfRoomiesToDelete = roomieBillItemsToDelete.length;
+						//need to count all billITems roomies
+						totalRoomiesInRecords = (totalRoomiesInRecords - numOfRoomiesToDelete);
+						var RBIDeleteTransaction = self.get('store').transaction();
+						roomieBillItemsToDelete.forEach(function(roomieBillItemToDelete) {
+							RBIDeleteTransaction.add(roomieBillItemToDelete);
+							roomieBillItemToDelete.deleteRecord();
+						});
+						RBIDeleteTransaction.commit();
+					}
+				).then(
+					function() {
+						Yeomanwebapp.BillItem.find(billItem.get('billItemId')).then(
+							function(result) {
+								//tried to delete with ED eventually ended up in error
+								//due to bug , that the childern are getting put request
+								//while the parent is deleted.
+								var billItemToDelete = result;
+								var transaction = self.get('store').transaction();
+								transaction.add(billItemToDelete);
+								billItemToDelete.deleteRecord();
+								transaction.commit();
+								if (totalRoomiesInRecords == 0) {
+									self.set("isLoading",false);
+									self.set("isNewBill",false);
+									self.set("isClearBillDisabled",true);
+									self.clearBill();
+									alert("Bill Has Been Saved!");
+								}				
+							}
+						);
 					}
 				);
 			}

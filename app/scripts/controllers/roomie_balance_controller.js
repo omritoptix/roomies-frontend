@@ -132,6 +132,10 @@ Yeomanwebapp.RoomieBalanceController = Em.ObjectController.extend ({
 	  	var yearsSelected = self.get('yearsSelected');
 	  	var monthsSelected = self.get('monthsSelected');
 	  	var numOfMonths = monthsSelected.length * yearsSelected.length;
+	  	if (numOfMonths == 0) {
+	  		alert("all fields are required");
+	  		return;
+	  	}
 	  	yearsSelected.forEach(function(year) {
 	  		yearSelected  = year;
 	  		self.bills.pushObject({year : year, monthlyBills : Ember.A([])});
@@ -153,6 +157,9 @@ Yeomanwebapp.RoomieBalanceController = Em.ObjectController.extend ({
 									self.initRoomiesBillsArray();
 									self.calcBillShare();
 									self.set("isDisplayResults",true);
+								}
+								else {
+									alert("there are no bills to match your search");
 								}
 							}
 						}
@@ -207,6 +214,9 @@ Yeomanwebapp.RoomieBalanceController = Em.ObjectController.extend ({
 												self.initRoomiesBillsArray();
 												self.calcBillShare();
 												self.set("isDisplayResults",true);
+											}
+											else {
+												alert("there are no bills to match your search");
 											}
 										}
 									}

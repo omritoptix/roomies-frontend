@@ -43,15 +43,6 @@
 					<td>
 						{{view Yeomanwebapp.AmountView valueBinding="amount" placeholder="amount" name="camountPaid"}}</td>
 					{{#if isNew}}
-{{!-- 					<td>{{view Yeomanwebapp.RoomiesSelectNewView
-							contentBinding="apartmentRoomies"
-							optionLabelPath="content.name"
-							optionValuePath="content.id"
-							multiple="true"
-							classNames="multiple"
-							selectionBinding="roomiesAssigned"
-							name="capartmentRoomies"
-						}}</td> --}}
 						<td>{{view Yeomanwebapp.RoomiesSelectNewView
 							contentBinding="apartmentRoomies"
 							optionLabelPath="content.name"
