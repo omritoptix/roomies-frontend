@@ -1,0 +1,120 @@
+{{!set default year and month for current date}}
+{{setDefaults}}
+<legend>Manage Bills</legend>
+<img src="/images/ajax-loader.gif" id="loading-indicator" {{bindAttr class="isLoading::hide"}}/>
+<form class="form-inline">
+	<label>Month :</label> {{view Ember.Select
+				contentBinding="datePicker.monthPicker"
+				optionLabelPath="content.desc"
+				optionValuePath="content.id"
+				valueBinding = "monthSelected"
+				}}
+
+	&nbsp;&nbsp;&nbsp;<label>Year :</label> {{view Ember.Select 
+				contentBinding="datePicker.yearPicker"
+				valueBinding = "yearSelected"}}
+
+	<button class="btn btn-primary" {{action addBill}}>Add/Edit Bill</button>
+	{{!-- <button class="btn btn-primary" {{action addBill}} {{bindAttr disabled="isDisplayGrid"}}>Add/Edit Bill</button> --}}
+{{!-- 	<button class="btn btn-danger" {{action clearBill}} {{bindAttr disabled="isClearBillDisabled"}}>Clear</button>
+ --}}
+</form>
+<form id="billItemsForm" {{action "saveBill" on="submit"}}>
+
+	{{#if isDisplayGrid}}
+		<legend>Bill Items</legend>
+		<table id="addBillItemTable" class="table">
+			<tr>	
+				<th>Type</th>
+				<th>Amount</th>
+				<th>Assigned Roomies</th>
+				<th>
+			</tr>
+			{{#each billItems}}
+				<tr>
+					<td>{{view Yeomanwebapp.BillTypeSelect
+							contentBinding="controller.billTypes"
+							valueBinding="billTypeString"
+							}}
+
+						{{view Yeomanwebapp.OtherView valueBinding="other" placeholder="other" name="cother"}}
+			
+
+					<td>
+						{{view Yeomanwebapp.AmountView valueBinding="amount" placeholder="amount" name="camountPaid"}}</td>
+					{{#if isNew}}
+{{!-- 					<td>{{view Yeomanwebapp.RoomiesSelectNewView
+							contentBinding="apartmentRoomies"
+							optionLabelPath="content.name"
+							optionValuePath="content.id"
+							multiple="true"
+							classNames="multiple"
+							selectionBinding="roomiesAssigned"
+							name="capartmentRoomies"
+						}}</td> --}}
+						<td>{{view Yeomanwebapp.RoomiesSelectNewView
+							contentBinding="apartmentRoomies"
+							optionLabelPath="content.name"
+							optionValuePath="content.id"
+							multiple="true"
+							classNames="multiple"
+							selectionBinding="roomiesAssigned"
+							name="capartmentRoomies"
+						}}</td>
+					{{/if}}
+					{{#unless isNew}}
+					<td>{{view Yeomanwebapp.RoomiesSelectEditView
+							contentBinding="roomiesAssigned"
+							optionLabelPath="content.name"
+							optionValuePath="content.id"
+							multiple="true"
+							classNames="multiple"
+					}}</td>
+					{{/unless}}
+					<td>
+						 
+						<!-- Modal -->
+						{{#view Yeomanwebapp.Pay}}Pay{{/view}}
+
+
+						<div class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							<div class="modal-header">
+						   		{{!-- {{#view Yeomanwebapp.DismissModal}}x{{/view}} --}}
+						    	<h3 id="myModalLabel">Payments</h3>
+						  	</div>
+						  	<div class="modal-body">
+					  				<table class="table">
+						  				<tr>
+						  					<th>Name</th>
+						  					<th>Share (out of {{amount}})</th>
+						  					<th>Amount Paid</th>
+						  				</tr>
+						  				{{#each roomiesAssigned}}
+						  				<tr>
+						  					<td>{{name}}</td>
+						  					<td>{{view Ember.TextField valueBinding="needToPay"}}</td>
+						  					<td>{{view Ember.TextField valueBinding="amountPaid"}}</td>
+						  				</tr>
+						  				{{/each}}		 		  
+					  				</table>							  								  		
+						  	</div>
+						  	<div class="modal-footer">
+								{{#view Yeomanwebapp.PaymentModalValidate}}Done{{/view}}
+						  	</div>
+						</div>
+
+
+						<!-- modal -->
+
+						<button class="btn btn-danger" {{action removeItem this}}>X</button>
+					</td>
+				</tr>
+			{{/each}}
+
+		</table>
+
+		<button class="btn btn-success"  {{action addItem}} {{bindAttr disabled="isLoading"}}>Add Item</button>
+		<button class="btn btn-primary" type="submit" {{bindAttr disabled="isLoading"}}
+		{{bindAttr disabled="isSaveDisabled"}}>Save</button>
+	{{/if}}
+</form>

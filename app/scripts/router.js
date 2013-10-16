@@ -16,15 +16,17 @@ Yeomanwebapp.Router.map(function () {
     this.route('invite');
     this.route('myInvites');
     // this.route('homePage');
-    this.resource('balance', function() {
-      this.route('monthly');
-      this.route('yearly');
-    });
-    this.resource('bills', function() {
-      this.route('add');
-      this.route('edit');
-      this.route('manage');
-    });
+    // this.resource('balance', function() {
+    //   this.route('monthly');
+    //   this.route('yearly');
+    // });
+    this.route('balance');
+    // this.resource('bills', function() {
+    //   this.route('add');
+    //   this.route('edit');
+    //   this.route('manage');
+    // });
+    this.route('manage');
 
   });
   

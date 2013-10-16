@@ -18,7 +18,7 @@ Yeomanwebapp.DatePicker = Ember.Object.extend ({
 
 	yearPicker: function() {
 		var yearsRange = [];
-		for (i = new Date().getFullYear(); i > 1999; i--) {
+		for (i = new Date().getFullYear() + 3; i > 1999; i--) {
 			yearsRange.push(i);
 		}
 		return yearsRange;

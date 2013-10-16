@@ -1,0 +1,106 @@
+<legend>Balance</legend>
+	{{!set default year and month for current date}}
+	{{setDefaults}}
+	<form class="form-inline">
+		{{! add multiple=true and classNames="someClass"}}
+
+		Month : {{view Ember.Select
+					multiple="true"
+					classNames="multiple"
+					contentBinding="datePicker.monthPicker"
+					optionLabelPath="content.desc"
+					optionValuePath="content.id"
+					selectionBinding = "monthsSelected"
+				}}
+		{{#view Yeomanwebapp.selectAll}}Toggle Select{{/view}}
+
+		&nbsp;&nbsp;&nbsp;Year : {{view Ember.Select 
+			multiple="true"
+			classNames="multiple"
+			contentBinding="datePicker.yearPicker"
+			selectionBinding = "yearsSelected"}}
+		<button class="btn btn-primary" {{action searchBill}}>Search Bill</button>
+
+	</form>
+
+	{{#if isDisplayResults}}
+		{{!-- {{initRoomiesBillsArray}}
+		{{calcBillShare}} --}}
+		{{#each bills}}
+			<legend>{{year}}</legend>
+			{{#each monthlyBills}}
+				<h5 style="text-decoration:underline">{{month.desc}}</h5>
+				<table class="table table-hover">
+					<tr>
+						<th>Date Created</th>
+						<th>Bill Type</th>
+						<th>Amount</th>
+						<th>Assigned Roomies</th>
+						<th>Created By</th>
+					</tr>
+
+					{{#each billItems}}
+					<tr>
+						<td>{{format-date dateCreated}}</th>
+						<td>{{billType.description}}</td>
+						<td>{{amount}}</td>
+						<td>{{#view Yeomanwebapp.ShowRoomiesPopOver}}{{roomieBillItem.length}} {{pluralize Roomie roomieBillItem.length}}{{/view}}
+						</td>
+						<td>{{createdBy.username}}</td>
+					</tr>
+					{{/each}}
+				{{/each}}
+		{{/each}}
+
+		<legend>Balance</legend>
+		<table class="table">
+			<tr>
+				{{#each roomiesBills}}
+					<th>{{this.username}}</th>
+				
+				{{/each}}
+			</tr>
+			<tr>
+				{{#each roomiesBills}}
+					<td>
+						{{#view Yeomanwebapp.Balance}}{{balance}}{{/view}}
+						<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  							<div class="modal-header">
+							    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+							    <h3 id="myModalLabel">Bill Details</h3>
+							</div>
+							<div class="modal-body">
+								{{#each billDetails}}
+							  		{{month.desc}},{{year}}
+								  	<table class="table table-hover">
+											<tr>
+												<th>Bill Type</th>
+												<th>Total</th>
+												<th>Need To Pay</th>
+												<th>Amount Left</th>
+											</tr>
+											{{#each billItemDetails}}
+												<tr>
+													<td>{{type}}</td>
+													<td>{{total}}</td>
+													<td>{{needToPay}}</td>
+													<td>{{amountLeft}}</td>
+												</tr>
+											{{/each}}
+									</table>
+								{{/each}}
+							</div>
+							<div class="modal-footer">
+							    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+							</div>
+						</div>	
+					</td>								
+				{{/each}}
+			</tr>
+		</table>
+	{{/if}}
+
+
+
+
+

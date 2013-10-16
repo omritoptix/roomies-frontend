@@ -1,8 +1,10 @@
 Ember.Select.reopen({
 	didInsertElement: function() {
-		if (this.$().hasClass('multiple')) {
-			this.$().chosen();
-		}
+		// if (this.$().hasClass('multiple')) {
+		// 	this.$().chosen();
+		// }
+		this.$().chosen();
 	}
 
 })
+

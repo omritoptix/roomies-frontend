@@ -1,0 +1,119 @@
+Yeomanwebapp.ShowRoomiesPopOver = Em.View.extend({
+	tagName : 'a',
+	attributeBindings : ['href'],
+	href : '#',
+	// attributeBindings : ['dataToggle:data-toggle']
+	// dataToggle : 'popover',
+	click : function(evt) {
+		//added prevent Default to stop the browser from parsing the link,
+		//and by that when hovering over, we still get the same look and feel
+		//like a link even though it's pop over. also added href attribute
+		//because of it
+		evt.preventDefault();
+		currBillItem = this.get('context');
+		roomieBillItems = currBillItem.get('roomieBillItem').toArray();
+		var roomiesBillsPopOver = {
+			usernames :[],
+			amountPaid : []
+		};
+		roomieBillItems.forEach(function(roomieBillItem) {
+			roomiesBillsPopOver.usernames.push(roomieBillItem.get('roomie').get('username'));
+			roomiesBillsPopOver.amountPaid.push(roomieBillItem.get('amountPaid'));
+		});
+
+		var popOverContentToDisplay = "";
+
+		for (var i=0; i< roomiesBillsPopOver.usernames.length;i++) {
+			popOverContentToDisplay += roomiesBillsPopOver.usernames[i] + ":" + roomiesBillsPopOver.amountPaid[i] + " Paid ";
+		}
+
+		this.$().popover({
+		content : popOverContentToDisplay,
+		title : "Assigned Roomies",
+		trigger : "manual"
+		});
+
+		this.$().popover('toggle');
+	}
+});
+
+
+Yeomanwebapp.Balance = Em.View.extend ({
+	tagName : 'a',
+	attributeBindings : ['href'],
+	href : "#",
+	classNameBindings : ['positive','negative','zero'],
+	positive : function() {
+		if (this.get('context.balance') > 0) {
+			return true;
+		}
+	}.property('controller.roomiesBills.@each.balance'),
+
+	negative : function() {
+		if (this.get('context.balance') < 0) {
+			this.set("context.balance",Math.abs(this.get('context.balance')));
+			return true;
+		}
+	}.property('controller.roomiesBills.@each.balance'),
+
+	zero : function() {
+		if (this.get('context.balance') == 0)
+			return true;
+	},
+
+	click : function(evt) {
+		// debugger;	
+		evt.preventDefault();
+		this.$().next().modal('show');
+	}
+
+})
+
+Yeomanwebapp.selectAll = Em.View.extend({
+	tagName:'button',
+	classNames : ['btn','btn-danger'],
+	deselectAll : false,
+	click : function() {
+		var monthsSelection = $(".multiple").first();
+		if (!this.deselectAll) {
+			monthsSelection.find('option').prop('selected',true);
+			monthsSelection.trigger('change')
+	    	monthsSelection.trigger("chosen:updated");
+	    	this.deselectAll = !this.deselectAll;
+	    }
+	    else {
+	    	monthsSelection.find('option').prop('selected',false);
+			monthsSelection.trigger('change')
+	    	monthsSelection.trigger("chosen:updated");
+	    	this.deselectAll = !this.deselectAll;
+	    }
+	}
+})
+
+// Yeomanwebapp.RoomieBalanceView = Em.View.extend({
+// 	didInsertElement : function() {
+// 		$("#balanceForm").validate({
+// 			rules: {
+// 				cMonthsSelection : "required",
+// 				cYearsSelection : "required"
+// 			},
+
+// 			errorPlacement: function(error, element) {
+//     			if (element.attr("name") == "cMonthsSelection" ) {
+//     				error.css( "padding-top", "11px" );
+//     				error.insertAfter('[class=chosen-drop]');
+//     			}
+//     			else {
+//         			error.insertAfter(element);
+//     			}
+//     		},
+
+// 			//added this to check the multiple select capartmentRoomies
+// 			ignore: ':hidden:not(".multiple")'
+// 		});
+// 	},
+
+// })
+
+
+
