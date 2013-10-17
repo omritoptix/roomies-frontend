@@ -64,6 +64,7 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 						self.set("isNewBill",true);
 						self.set("isDisplayGrid",true);
 						self.set("isClearBillDisabled",false);
+						self.set("isSaveDisabled",true);
 					}
 					else {
 						//if bill Already Exists
@@ -71,7 +72,6 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 						self.set("isNewBill",false);
 						self.set("isDisplayGrid",true);
 						self.set("isClearBillDisabled",false);
-						debugger;
 						Yeomanwebapp.BillItem.find({bill : result.objectAt(0).get('id')}).then(
 							function(result) {
 								var billItems = result.toArray();

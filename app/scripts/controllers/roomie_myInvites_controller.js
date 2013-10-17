@@ -2,27 +2,36 @@ Yeomanwebapp.RoomieMyInvitesController = Ember.ObjectController.extend({
 	myInvites : null,
 	myInvitesLength : null,
 	newInvitesLength : null,
+	isInvites : false,
+	isNewInvites : false,
 
 	getMyInvites : function() {
+		debugger;
 		var self = this;
 		roomie = this.get('content');
-		invites = Yeomanwebapp.Invite.find({
-			toRoomie : roomie.get('id')
-		});
-		invites.one('didLoad', function() {
-			var newInvites = invites.filter(function(invite) {
-  				return (invite.get('new') == true);
-			});
-			self.set("myInvites", invites.toArray());
-			self.set("myInvitesLength", invites.toArray().length);
-			self.set("newInvitesLength",newInvites.toArray().length);
-		});
-		
-	}.observes('content.toArray().@each'),
+		Yeomanwebapp.Invite.find({
+			toRoomie : roomie.get('id'),
+			status : 2
+		}).then(
+			function(result) {
+				self.set("myInvites", result.toArray());
+				if (self.get('myInvites.length') > 0) {
+					self.set("isInvites",true);
+				}
+				var newInvites = self.get('myInvites').filter(function(invite) {
+					return (invite.get('new') == true);
+				});
+				if (newInvites.length > 0) {
+					self.set("isNewInvites", true);
+				}
+			}
+		);
+	}.property(),
 
 
 
 	confirm : function(invite) {
+		var self = this;
 		answer = confirm("are you sure you want to confirm the invitation?");
 		if (answer) {
 			//check if already has an apartment
@@ -31,40 +40,57 @@ Yeomanwebapp.RoomieMyInvitesController = Ember.ObjectController.extend({
 				alert("you already have an apartment!");
 			}
 			else {
-
+				debugger;
+				//add the apartment and change invite status to 1 - accepted
 				var apartmentToAdd = invite.get('apartment');
-				apartmentToAdd.set("roomiesNum",apartmentToAdd.get('roomiesNum') + 1);
-				apartmentToAdd.save();
-				apartmentToAdd.one('didUpdate', function() {
-					roomie.set('apartment',apartmentToAdd);
-					roomie.save();
-					roomie.one('didUpdate', function() {
-						//delete the invite after the roomie confirmed
-						var transaction = this.get("store").transaction();
-						transaction.add(invite);
-						invite.deleteRecord();
-						transaction.commit();
-						alert("the apartment has been added!");
-					});
-				});
+				roomie.set("apartment",apartmentToAdd);
+				roomie.save().then(
+					function(result) {
+						invite.set("status",1);						
+						invite.save().then(
+							function() {
+								notAnsweredInvites = self.get('myInvites').filter(function(invite) {
+									return (invite.get('status') == 2);
+								});
+
+								if (notAnsweredInvites.length == 0) {
+									self.set("isInvites",false);
+								}
+								alert("the apartment has been added!");
+							}
+						);
+					}							
+				);							
 			}
 		}
 	},
 
 	reject : function(invite) {
-		answer = confirm("are you sure you want to delete the invitation?")
+		var self = this;
+		answer = confirm("are you sure you want to delete the invitation?");
 		if (answer) {
-			var transaction = this.get("store").transaction();
-					transaction.add(invite);
-					invite.deleteRecord();
-					transaction.commit();
+			debugger;
+			invite.set("status",0);
+			invite.save().then(
+				function() {
+					notAnsweredInvites = self.get('myInvites').filter(function(invite) {
+						return (invite.get('status') == 2);
+					});
+
+					if (notAnsweredInvites.length == 0) {
+						self.set("isInvites",false);
+					}
+				}
+			);
 		}
 	},
 
 	setNewToFalse : function() {
 		debugger;
  		var transaction = this.get("store").transaction();
-		var newInvitesArray = newInvites.toArray();
+		var newInvitesArray = this.get('myInvites').filter(function(invite) {
+			return (invite.get('new') == true);
+		});
 		newInvitesArray.forEach(function(invite) {
 			invite.set("new",false);
 			transaction.add(invite);

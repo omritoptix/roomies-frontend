@@ -16,8 +16,8 @@
 
 	<button class="btn btn-primary" {{action addBill}}>Add/Edit Bill</button>
 	{{!-- <button class="btn btn-primary" {{action addBill}} {{bindAttr disabled="isDisplayGrid"}}>Add/Edit Bill</button> --}}
-{{!-- 	<button class="btn btn-danger" {{action clearBill}} {{bindAttr disabled="isClearBillDisabled"}}>Clear</button>
- --}}
+	<button class="btn btn-danger" {{action clearBill}} {{bindAttr disabled="isClearBillDisabled"}}>Clear</button>
+
 </form>
 <form id="billItemsForm" {{action "saveBill" on="submit"}}>
 
