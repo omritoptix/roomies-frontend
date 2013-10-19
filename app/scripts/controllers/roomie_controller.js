@@ -1,5 +1,5 @@
 Yeomanwebapp.RoomieController = Em.ObjectController.extend ({
-	needs : ['roomieEdit'],
+	// needs : ['roomieEdit'],
 	newInvites : null,
 	newInvitesNum : null,
 	noApartment : true,
@@ -22,6 +22,10 @@ Yeomanwebapp.RoomieController = Em.ObjectController.extend ({
 		});
 
 	}.property(),
+
+	// setNoApartment : function() {
+	// 	debugger;
+	// }.property(controllers.roomieEdit.isApartment),
 
 
 	// computed property not working

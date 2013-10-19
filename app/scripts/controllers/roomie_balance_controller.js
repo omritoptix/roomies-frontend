@@ -54,7 +54,14 @@ Yeomanwebapp.RoomieBalanceController = Em.ObjectController.extend ({
 							var amount = billItem.get('amount');
 							billItem.get('billType').then(
 								function(result) {
-									var billType = result.get('description');
+									debugger;
+									var billType;
+									if (result.get('description') == "Other") {
+										billType = billItem.get('other');
+									}
+									else {
+										billType = result.get('description');
+									}
 									roomieBillItems.forEach(function(roomieBillItem) {
 										amountPaid = roomieBillItem.get('amountPaid');
 										needToPay = roomieBillItem.get('needToPay');
@@ -111,24 +118,8 @@ Yeomanwebapp.RoomieBalanceController = Em.ObjectController.extend ({
 		var bill = []
 		var billItem = [];
 		var roomieBillItem = []	
-
-		//init bills
-		self.bills.clear();
-		//init roomiesBills array
-		self.roomiesBills.clear()
-		// if (this.get('roomiesBills.length') > 0) {
-		// 	self.roomiesBills.forEach(function(roomieBill) {
-		// 		roomieBill.billDetails.clear();
-		// 		Ember.set(roomieBill,"balance",0);
-
-		// 	});
-	 //  	}
-
-	  	//turn it into a form a query validate it.
-	  	//no months chosen - return no results (msg - you must select a month)
-	  	//no years chosen - return no results (msg - you must select a year)
-	  	//add option to select all months
-	  	//
+		//clear previous results
+		this.clear();
 	  	var yearsSelected = self.get('yearsSelected');
 	  	var monthsSelected = self.get('monthsSelected');
 	  	var numOfMonths = monthsSelected.length * yearsSelected.length;
@@ -228,5 +219,13 @@ Yeomanwebapp.RoomieBalanceController = Em.ObjectController.extend ({
 			});
 		});
 	},
+
+	clear : function() {
+		this.set("isDisplayResults",false);
+		//init bills
+		this.bills.clear();
+		//init roomiesBills array
+		this.roomiesBills.clear()	
+	}
 
 })

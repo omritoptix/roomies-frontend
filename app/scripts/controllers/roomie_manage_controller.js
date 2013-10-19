@@ -13,7 +13,6 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 	isDisplayGrid : false,
 	billItemsToDelete : Ember.A([]),
 
-
 	datePicker : Yeomanwebapp.DatePicker.create(),
 
 	setDefaults : function() {

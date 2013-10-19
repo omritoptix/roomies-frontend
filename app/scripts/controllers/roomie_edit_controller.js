@@ -1,4 +1,6 @@
 Yeomanwebapp.RoomieEditController = Em.ObjectController.extend ({
+	isApartment : null,
+
 	save : function () {
 		var updatedRecord = this.get('content');
 		var transaction = this.get("store").transaction();
@@ -35,23 +37,51 @@ Yeomanwebapp.RoomieEditController = Em.ObjectController.extend ({
 		var self = this;
 		answer = confirm("are you sure you want to remove the apartment?");
 		if (answer) {
+			debugger;
+			self.set("isApartment",false);
 			record = this.get('content');
-			if (record.get('apartment').get('roomiesNum') == 1) {
-				var apartmentRecordID = this.get('content').get('apartment').get('id');
-				apartmentRecord = Yeomanwebapp.Apartment.find(apartmentRecordID);
-				apartmentRecord.deleteRecord();
-				apartmentRecord.save();
-			}
-			else {
-				var apartmentRecord = record.get('apartment');
-				apartmentRecord.set("roomiesNum", apartmentRecord.get('roomiesNum') - 1);
-				apartmentRecord.save();
-			}
-			record.set('apartment',null);
-			record.save();
-			record.one('didUpdate', function() {
-				alert("the apartment has been removed!");
-			});
+			var apartmentRecord = this.get('content.apartment');
+			Yeomanwebapp.Roomie.find({apartment : apartmentRecord.get('id')}).then(
+				function(result) {
+					//if only roomie left in apartment - delete the apartment
+					//since there is delete on cascade, the invitation will be deleted too.
+					if (result.toArray().length == 1) {
+						apartmentRecord = Yeomanwebapp.Apartment.find(apartmentRecord.get('id'));
+						apartmentRecord.deleteRecord();
+						apartmentRecord.save();	
+					}
+				}
+			).then(
+				function() {
+					//delete all invitation on status 2 (not aswered) send by this roomie
+					Yeomanwebapp.Invite.find({
+						fromRoomie : self.get('content.id'),
+						apartment : apartmentRecord.get('id'),
+						status : 2
+					}).then(
+						function(result) {
+							var invitationsSent = result.toArray();
+							if (invitationsSent.length > 0) {
+								var transaction = self.get('store').transaction();
+								invitationsSent.forEach(function(invitationSent) {
+									transaction.add(invitationSent);
+									invitationSent.deleteRecord();
+								});
+								transaction.commit();
+							}
+						}
+					).then(
+						function() {
+							record.set('apartment',null);
+							record.save().then(
+								function() {
+									alert("the apartment has been removed!");	
+								}
+							);
+						}
+					);
+				}
+			);			
 		}
 	},
 
@@ -60,27 +90,15 @@ Yeomanwebapp.RoomieEditController = Em.ObjectController.extend ({
 		var apartmentAddress = prompt("please enter your new apartment address");
 		if (apartmentAddress != null && apartmentAddress !='') {
 			// var transaction = this.get("store").transaction();
+			self.set("isApartment",true);
 			record = this.get('content');
 			newApartment = Yeomanwebapp.Apartment.createRecord();
 			newApartment.set('address',apartmentAddress);
-			newApartment.set('roomiesNum',1);
-			// newApartment.save();
-			//need to wait for id from the server before we can continue
-			// newApartment.addObserver('id',function() {
-			// 	record.set('apartment',newApartment);
-			// 	record.save();
-			// 	record.one('didUpdate', function() {
-			// 		newApartment.removeObserver('id');
-			// 		alert("The new Apartment has been added!");
-			// 	});
-			// });
 			newApartment.save().then(
 				function() {
-					//successful save
 					record.set('apartment',newApartment);
 					record.save().then(
 						function() {
-							//successful save
 							alert("The new Apartment has been added!")
 						},
 						function(error) {
@@ -95,7 +113,4 @@ Yeomanwebapp.RoomieEditController = Em.ObjectController.extend ({
 			);
 		}
 	}
-
-
-
 })

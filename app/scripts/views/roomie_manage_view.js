@@ -57,8 +57,8 @@ Yeomanwebapp.Pay = Em.View.extend({
 				var numOfRoomies = this.get('context.roomiesAssigned.length');
 				defaultNeedToPay = (this.get('context.amount') / numOfRoomies);
 				this.get('context.roomiesAssigned').forEach(function(roomieAssigned) {
-					Ember.set(roomieAssigned,"needToPay",defaultNeedToPay);
-					Ember.set(roomieAssigned,"amountPaid",defaultNeedToPay);
+					Ember.set(roomieAssigned,"needToPay",defaultNeedToPay.toFixed(2));
+					Ember.set(roomieAssigned,"amountPaid",defaultNeedToPay.toFixed(2));
 					Ember.set(roomieAssigned,"isAmountInit",true);
 					Ember.set(roomieAssigned,"isPayButtonClicked",true);
 				});
@@ -110,7 +110,7 @@ Yeomanwebapp.PaymentModalValidate = Em.View.extend({
 		if (invalid) {
 			return;
 		}
-		else if ((totalAmountPaid <= this.get('context.amount')) && (totalAmountNeedToPay == this.get('context.amount'))) {
+		else if ((Math.floor(totalAmountPaid) <= this.get('context.amount')) && (Math.floor(totalAmountNeedToPay) == this.get('context.amount'))) {
 			this.$().parent().parent().modal('hide');
 		}
 		else if (totalAmountNeedToPay < this.get('context.amount')) {
@@ -125,6 +125,15 @@ Yeomanwebapp.PaymentModalValidate = Em.View.extend({
 
 Yeomanwebapp.RoomieManageView = Em.View.extend({
 	didInsertElement : function() {
+		//custom jquery validator to validate there is at least 2 roomies
+		//assigned for each bill item
+		jQuery.validator.addMethod('validateNumOfRoomies', function (roomiesAssigned) {
+			debugger;
+			if (!Ember.isEmpty(roomiesAssigned)) {
+				return (roomiesAssigned.length > 1);
+			}
+		    	}, "You must enter at least two roomies for a bill Item");
+
 		$("#billItemsForm").validate({
 			rules: {
 				camountPaid: {
@@ -132,13 +141,17 @@ Yeomanwebapp.RoomieManageView = Em.View.extend({
 					number : true
 				},
 				cother : "required",
-				capartmentRoomies : "required"
+				capartmentRoomies :{
+					validateNumOfRoomies : true
+				} 
 			},
 
 			errorPlacement: function(error, element) {
     			if (element.attr("name") == "capartmentRoomies" ) {
     				error.css( "padding-top", "11px" );
-    				error.insertAfter('[class=chosen-drop]');
+    				//insert the error after the chosen drop down class
+    				var nextElement = element.next();
+    				error.insertAfter(nextElement.children().get(1));
     			}
     			else {
         			error.insertAfter(element);

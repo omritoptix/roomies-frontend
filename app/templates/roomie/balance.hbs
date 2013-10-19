@@ -42,7 +42,11 @@
 					{{#each billItems}}
 					<tr>
 						<td>{{format-date dateCreated}}</th>
-						<td>{{billType.description}}</td>
+						{{#if other}}
+							<td>{{other}}</td>
+						{{else}}
+							<td>{{billType.description}}</td>
+						{{/if}}
 						<td>{{amount}}</td>
 						<td>{{#view Yeomanwebapp.ShowRoomiesPopOver}}{{roomieBillItem.length}} {{pluralize Roomie roomieBillItem.length}}{{/view}}
 						</td>
