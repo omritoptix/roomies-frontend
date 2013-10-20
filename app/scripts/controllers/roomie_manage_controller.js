@@ -1,6 +1,6 @@
 Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 	isNewBill : null,
-	isClearBillDisabled : true,
+	isinitStateDisabled : true,
 	billItems : Ember.A([]),
 	billTypes : [],
 	billTypeSelected : null,
@@ -12,6 +12,8 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 	billItemsToDelete : Ember.A([]),
 	isDisplayGrid : false,
 	billItemsToDelete : Ember.A([]),
+	currBill : null,
+	isDeleteBill : false,
 
 	datePicker : Yeomanwebapp.DatePicker.create(),
 
@@ -48,8 +50,9 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 
 
 	addBill : function() {
-		this.clearBill();
 		var self = this;
+		this.initState();
+		// this.displayMsg();
 		var monthSelected = this.get('monthSelected');
 		var yearSelected = this.get('yearSelected');
 		Yeomanwebapp.Bill.find({
@@ -58,11 +61,12 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 			month : monthSelected
 		}).then(
 				function(result) {
+					debugger;
 					//on success
 					if (result.get('content').length == 0) {
 						self.set("isNewBill",true);
 						self.set("isDisplayGrid",true);
-						self.set("isClearBillDisabled",false);
+						self.set("isinitStateDisabled",false);
 						self.set("isSaveDisabled",true);
 					}
 					else {
@@ -70,7 +74,7 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 						// alert("bill already exists");
 						self.set("isNewBill",false);
 						self.set("isDisplayGrid",true);
-						self.set("isClearBillDisabled",false);
+						self.set("isinitStateDisabled",false);
 						Yeomanwebapp.BillItem.find({bill : result.objectAt(0).get('id')}).then(
 							function(result) {
 								var billItems = result.toArray();
@@ -109,7 +113,6 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 													var roomieBillItems = result.toArray();
 													roomieBillItems.forEach(function(roomieBillItem) {
 														var currRoomie = Yeomanwebapp.Roomie.find(roomieBillItem.get('roomie.id'));
-														debugger;
 														roomiesAssigned.pushObject({
 															name: currRoomie.get('username'),
 															id : currRoomie.get('id'),
@@ -136,17 +139,19 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 		
 	},
 
-	clearBill: function() {
+	initState: function() {
 		this.set("isLoading",true);
 		this.billItems.clear();
 		this.billItemsToDelete.clear();
 		this.set("isDisplayGrid",false);
-		this.set("isClearBillDisabled",true);
+		this.set("isNewBill",false);
+		this.set("isinitStateDisabled",true);
+		this.set("isDeleteBill",false);
+		this.set("currBill",null);
 		this.set("isLoading",false);
 	},
 
 	addItem : function(billTypeString,isOtherDisabled,roomiesAssigned,other,amount,isNew,billItemId) {
-		debugger;
 		billTypeString = (typeof billTypeString === "undefined") ? null : billTypeString;
 		isOtherDisabled = (typeof isOtherDisabled === "undefined") ? null : isOtherDisabled;
 		roomiesAssigned = (typeof roomiesAssigned === "undefined") ? Ember.A([]) : roomiesAssigned;
@@ -190,7 +195,6 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 		this.billItems.removeObject(item);
 
 		if (item.get('isNew') == false) {
-			debugger;
 			item.set("isDelete",true);
 			self.billItemsToDelete.pushObject(item);
 		}
@@ -208,7 +212,7 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 		this.set("isLoading",true);
 		var newBill = null;
 		//if it's a new bill
-		if (self.isNewBill == true) {
+		if (self.get('isNewBill') == true) {
 			newBill = Yeomanwebapp.Bill.createRecord({
 				apartment : self.get('content'),
 				year : self.get('yearSelected'),
@@ -218,7 +222,12 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 			});
 			newBill.save().then(
 				function() {
+					debugger;
+					self.set("currBill", newBill);
 					self.saveBillItems(newBill);
+				},
+				function(error) {
+					debugger;
 				}
 			);
 		}
@@ -230,6 +239,7 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 				month : self.get('monthSelected')
 			}).then(
 					function(result) {
+						self.set("currBill", result.objectAt(0));
 						self.saveBillItems(result.objectAt(0));
 					}
 				);
@@ -238,7 +248,6 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 
 
 	saveBillItems : function(bill) {
-		debugger;
 		var self = this;
 
 		//add the billItemToDelete array , to the end
@@ -249,7 +258,6 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 
 		//count total roomies in bill items so
 		//only in the last save of roomies will display a done message
-		debugger;
 		var totalRoomiesInRecords = 0;
 		self.billItems.forEach(function(item) {
 			totalRoomiesInRecords += item.get('roomiesAssigned.length');
@@ -278,7 +286,6 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 										function(result) {
 											//check if pay button has been clicked and amounts were set,
 											//else set the amount roomies need to pay and paid automatically
-											debugger;
 											var needToPay = 0;
 											var amountPaid = 0;
 											var numOfRoomiesAssigned = billItem.get('roomiesAssigned.length');
@@ -300,11 +307,13 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 												function() {
 													totalRoomiesInRecords--;
 													if (totalRoomiesInRecords == 0) {
-														self.set("isLoading",false);
-														self.set("isNewBill",false);
-														self.set("isClearBillDisabled",true);
-														self.clearBill();
-														alert("Bill Has Been Saved!")
+														if (self.get('billItems.length') == self.get('billItemsToDelete.length')) {
+															self.set("isDeleteBill",true);
+															self.DeleteBill();
+														}
+														else {
+															self.displayMsg();
+														}
 													}
 												}
 											);
@@ -337,11 +346,16 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 									function() {
 										totalRoomiesInRecords--;
 										if (totalRoomiesInRecords == 0) {
-											self.set("isLoading",false);
-											self.set("isNewBill",false);
-											self.set("isClearBillDisabled",true);
-											self.clearBill();
-											alert("Bill Has Been Saved!")
+											debugger;
+											//check if we delete the bill incase
+											//there are no bill Items
+											if (self.get('billItems.length') == self.get('billItemsToDelete.length')) {
+												self.set("isDeleteBill",true);
+												self.DeleteBill();
+											}
+											else {
+												self.displayMsg();
+											}
 										}
 									}
 								);
@@ -349,11 +363,14 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 							else {
 								totalRoomiesInRecords--;
 								if (totalRoomiesInRecords == 0) {
-									self.set("isLoading",false);
-									self.set("isNewBill",false);
-									self.set("isClearBillDisabled",true);
-									self.clearBill();
-									alert("Bill Has Been Saved!")							
+									debugger;
+									if (self.get('billItems.length') == self.get('billItemsToDelete.length')) {
+										self.set("isDeleteBill",true);
+										self.DeleteBill();
+									}
+									else {
+										self.displayMsg();
+									}
 								}
 							}
 						}
@@ -363,7 +380,6 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 			}
 
 			else if(billItem.get('isNew') == false && billItem.get('isDelete') == true) {
-				debugger;
 				//first delete all roomieBillItems for the billItem since ember
 				//dont cascade on delete
 				Yeomanwebapp.RoomieBillItem.find({billItem : billItem.get('billItemId')}).then(
@@ -392,11 +408,13 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 								billItemToDelete.deleteRecord();
 								transaction.commit();
 								if (totalRoomiesInRecords == 0) {
-									self.set("isLoading",false);
-									self.set("isNewBill",false);
-									self.set("isClearBillDisabled",true);
-									self.clearBill();
-									alert("Bill Has Been Saved!");
+									if (self.get('billItems.length') == self.get('billItemsToDelete.length')) {
+										self.set("isDeleteBill",true);
+										self.DeleteBill();
+									}
+									else {
+										self.displayMsg();
+									}
 								}				
 							}
 						);
@@ -407,5 +425,37 @@ Yeomanwebapp.RoomieManageController = Em.ObjectController.extend({
 		});
 
 	},
+
+	DeleteBill : function() {
+		debugger;
+		var self = this;
+		var billToDelete = this.currBill;
+		billToDelete.deleteRecord();
+		billToDelete.save();
+		//promise is not invoked!!!
+		//check why.
+		billToDelete.save().then(
+			function() {
+				debugger;
+				self.displayMsg();
+			},
+			function() {
+				debugger;
+			}
+		);
+	},
+
+	displayMsg : function() {
+		debugger;
+		var self = this;
+		if (this.get("isDeleteBill") == false) {
+			self.initState();
+			alert("Bill Has Been Saved!");
+		}
+		else {
+			self.initState();
+			alert("Bill Has Been Deleted!");
+		}
+	}
 
 })
