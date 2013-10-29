@@ -24,6 +24,7 @@ Yeomanwebapp.OtherView = Em.TextField.extend({
 	 	this.$().css("margin-bottom",0);
 	 	if (Ember.isNone(this.get('context.other'))) {
 	 		this.$().hide()
+	 		this.$().addClass("ignore");
 	 	}
 	 	else {
 	 		this.$().attr('disabled','disabled');
@@ -158,8 +159,10 @@ Yeomanwebapp.RoomieManageView = Em.View.extend({
     			}
     		},
 
-			//added this to check the multiple select capartmentRoomies
-			ignore: ':hidden:not(".multiple")'
+			//1 - ignore all elements that are hidden, without the class .multiple (don't ignore .multiple with hidden)
+			//2- ignore all elements with class "ignore"
+			ignore: ':hidden:not(".multiple"), .ignore'
+			
 		});
 	},
 
